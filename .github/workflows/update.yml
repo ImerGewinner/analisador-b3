@@ -33,7 +33,7 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Atualizar mercado B3 e fundamentos CVM
-        run: python app.py
+        run: python run_pipeline.py
 
       - name: Reconciliar CNPJ e regenerar painel
         run: python fix_cnpj.py
