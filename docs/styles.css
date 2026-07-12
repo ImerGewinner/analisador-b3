@@ -26,7 +26,7 @@ body {
 .hero { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 18px; }
 .eyebrow { display: inline-block; color: var(--navy); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: .75rem; }
 h1 { margin: 5px 0 4px; font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.04em; }
-.hero p { margin: 0; color: var(--muted); max-width: 960px; font-size: 1rem; line-height: 1.55; }
+.hero p { margin: 0; color: var(--muted); max-width: 1050px; font-size: 1rem; line-height: 1.55; }
 .muted { color: var(--muted); font-size: .9rem; white-space: nowrap; }
 .notice {
   display: grid;
@@ -61,7 +61,7 @@ h1 { margin: 5px 0 4px; font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.0
 .methodology summary { cursor: pointer; font-weight: 800; color: var(--navy); }
 .method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; padding-top: 15px; }
 .method-grid p { color: var(--muted); line-height: 1.5; margin: 5px 0 0; }
-.toolbar { display: grid; grid-template-columns: minmax(280px, 1fr) 260px 260px; gap: 12px; margin-bottom: 14px; }
+.toolbar { display: grid; grid-template-columns: minmax(280px, 1fr) 300px 280px; gap: 12px; margin-bottom: 14px; }
 input, select {
   width: 100%;
   padding: 13px 14px;
@@ -79,7 +79,7 @@ input, select {
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(23, 63, 107, .06);
 }
-table { width: 100%; border-collapse: collapse; min-width: 1380px; }
+table { width: 100%; border-collapse: collapse; min-width: 1450px; }
 thead { position: sticky; top: 0; z-index: 3; }
 th {
   background: var(--navy);
@@ -95,9 +95,10 @@ td {
   vertical-align: middle;
   font-size: .88rem;
 }
-td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230px; line-height: 1.3; }
-.main-row { cursor: pointer; transition: background .15s ease; }
+td small { display: block; color: var(--muted); margin-top: 4px; max-width: 250px; line-height: 1.3; }
+.main-row { cursor: pointer; transition: background .15s ease, outline .15s ease; }
 .main-row:hover, .main-row.open { background: #f0f6fd; }
+.main-row.open { outline: 1px solid var(--navy-2); outline-offset: -1px; }
 .pill {
   display: inline-flex;
   align-items: center;
@@ -106,7 +107,7 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
   font-weight: 800;
   font-size: .72rem;
   line-height: 1.2;
-  max-width: 250px;
+  max-width: 270px;
   white-space: normal;
 }
 .pill.ok { color: var(--green); background: var(--green-bg); }
@@ -118,7 +119,7 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  padding: 20px;
+  padding: 22px;
   border-bottom: 2px solid #bfd4ec;
 }
 .status-strip {
@@ -130,7 +131,7 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
 .status-step {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 6px 12px;
+  gap: 7px 12px;
   align-items: center;
   min-width: 0;
   padding: 14px;
@@ -147,14 +148,17 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
   letter-spacing: .06em;
 }
 .status-step strong { min-width: 0; line-height: 1.25; }
+.status-step .pill { justify-self: end; }
 .section-title {
-  margin: 16px 0 10px;
+  margin: 18px 0 10px;
   color: var(--navy);
   font-weight: 800;
-  font-size: .92rem;
+  font-size: .95rem;
 }
-.fund-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.fund-grid div {
+.fund-grid { display: grid; gap: 10px; }
+.financial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bazin-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fund-grid > div {
   min-width: 0;
   background: #fff;
   border: 1px solid var(--line);
@@ -164,10 +168,21 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
 .fund-grid span { display: block; color: var(--muted); font-size: .75rem; margin-bottom: 6px; }
 .fund-grid strong {
   display: block;
-  font-size: .96rem;
+  font-size: .98rem;
   line-height: 1.28;
   overflow-wrap: anywhere;
   word-break: normal;
+}
+.fund-grid small { display: block; color: var(--muted); margin-top: 5px; font-size: .72rem; line-height: 1.35; }
+.window-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed #b7c9dd;
+  border-radius: 10px;
+  background: #f7fbff;
+  color: #405875;
+  font-size: .8rem;
+  line-height: 1.45;
 }
 .quality-note { margin: 16px 0; padding: 12px 14px; border-left: 4px solid var(--navy); background: #eef5fd; line-height: 1.45; }
 .criteria { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -185,13 +200,27 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
 .criterion small { display: block; color: var(--muted); margin-top: 3px; }
 .criterion-value { font-weight: 800; text-align: right; }
 .criterion p { grid-column: 1 / -1; margin: 2px 0 0; color: var(--muted); font-size: .78rem; line-height: 1.4; }
+.dividend-events {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.dividend-events summary { cursor: pointer; color: var(--navy); font-weight: 800; }
+.events-table-wrap { overflow-x: auto; margin-top: 12px; }
+.events-table { min-width: 760px; font-size: .8rem; }
+.events-table thead { position: static; }
+.events-table th { background: var(--navy-2); padding: 9px 10px; font-size: .76rem; }
+.events-table td { padding: 9px 10px; }
+.empty-state { color: var(--muted); margin: 12px 0 2px; }
 .sources { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 16px; color: var(--muted); font-size: .78rem; }
 footer { color: var(--muted); padding: 18px 2px 6px; line-height: 1.5; }
 @media (max-width: 1200px) {
   .cards { grid-template-columns: repeat(3, 1fr); }
   .method-grid { grid-template-columns: repeat(2, 1fr); }
   .status-strip { grid-template-columns: 1fr; }
-  .fund-grid { grid-template-columns: repeat(2, 1fr); }
+  .financial-grid, .bazin-grid { grid-template-columns: repeat(2, 1fr); }
   .criteria { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {
@@ -201,6 +230,8 @@ footer { color: var(--muted); padding: 18px 2px 6px; line-height: 1.5; }
   .notice { grid-template-columns: 1fr; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .toolbar { grid-template-columns: 1fr; }
-  .method-grid, .criteria, .fund-grid { grid-template-columns: 1fr; }
+  .method-grid, .criteria, .financial-grid, .bazin-grid { grid-template-columns: 1fr; }
   .details-panel { padding: 14px; }
+  .status-step { grid-template-columns: 1fr; }
+  .status-step .pill { justify-self: start; }
 }
