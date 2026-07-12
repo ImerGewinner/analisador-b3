@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Analisador B3 — Qualidade e Liquidez</title>
-  <link rel="stylesheet" href="styles.css?v=20260712-2">
+  <link rel="stylesheet" href="styles.css?v=20260713-1">
 </head>
 <body>
   <main class="wrap">
@@ -15,21 +15,21 @@
       <div>
         <span class="eyebrow">Dados públicos B3 + CVM</span>
         <h1>Analisador B3</h1>
-        <p>Filtro inicial de liquidez e Checklist Anti-Lixo com DFP/ITR. Valuation permanece bloqueado enquanto payout e proventos não estiverem conciliados.</p>
+        <p>Etapa 1: liquidez. Etapa 2: qualidade com DFP/ITR. Etapa 3: payout e valuation, ainda bloqueados até a conciliação dos proventos.</p>
       </div>
       <div id="updated" class="muted">Carregando...</div>
     </header>
 
     <section class="notice">
       <strong>Como ler:</strong>
-      <span><b>Elegível inicial</b> significa que o papel tem liquidez e negociação suficientes para continuar a análise.</span>
-      <span><b>Filtro de qualidade</b> usa fundamentos CVM, mas aprovações ainda são parciais porque payout e métricas regulatórias financeiras estão pendentes.</span>
+      <span><b>Liquidez OK</b> significa apenas que o papel pode seguir para a análise fundamentalista.</span>
+      <span><b>Aprovada parcial</b> ainda não é aprovação final: payout, proventos e métricas regulatórias financeiras podem estar pendentes.</span>
     </section>
 
     <section class="cards">
       <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article>
-      <article class="card"><span>Elegíveis iniciais</span><strong id="initialEligible">-</strong></article>
-      <article class="card"><span>Aprovadas parciais</span><strong id="qualityApproved">-</strong></article>
+      <article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article>
+      <article class="card"><span>Qualidade parcial</span><strong id="qualityApproved">-</strong></article>
       <article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article>
       <article class="card"><span>Pendentes</span><strong id="pending">-</strong></article>
       <article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
@@ -39,10 +39,10 @@
       <details>
         <summary>Metodologia e limitações</summary>
         <div class="method-grid">
-          <div><b>Filtro inicial</b><p id="methodInitial"></p></div>
-          <div><b>Qualidade</b><p id="methodQuality"></p></div>
+          <div><b>Etapa 1 — Liquidez</b><p id="methodInitial"></p></div>
+          <div><b>Etapa 2 — Qualidade</b><p id="methodQuality"></p></div>
           <div><b>Financeiras</b><p id="methodFinancial"></p></div>
-          <div><b>Valuation</b><p id="methodValuation"></p></div>
+          <div><b>Etapa 3 — Valuation</b><p id="methodValuation"></p></div>
         </div>
       </details>
     </section>
@@ -50,12 +50,12 @@
     <section class="toolbar">
       <input id="q" type="search" placeholder="Buscar ticker ou empresa">
       <select id="filter">
-        <option value="INITIAL">Elegíveis iniciais</option>
+        <option value="INITIAL">Liquidez OK</option>
         <option value="">Todos</option>
-        <option value="APPROVED">Aprovadas parciais</option>
+        <option value="APPROVED">Qualidade parcial</option>
         <option value="RED">Alerta vermelho</option>
         <option value="PENDING">Pendentes</option>
-        <option value="OUT">Fora do universo inicial</option>
+        <option value="OUT">Fora do filtro de liquidez</option>
       </select>
       <select id="sort">
         <option value="liquidity">Ordenar por liquidez</option>
@@ -68,7 +68,7 @@
     <section class="table-wrap">
       <table>
         <thead><tr>
-          <th>Ticker</th><th>Empresa</th><th>Preço</th><th>Elegível inicial</th>
+          <th>Ticker</th><th>Empresa</th><th>Preço</th><th>Liquidez OK</th>
           <th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th>
           <th>DL/EBITDA</th><th>Margem líquida</th><th>Lucros + 5A</th><th>Referência</th>
         </tr></thead>
@@ -78,6 +78,6 @@
 
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260712-2"></script>
+  <script src="app.js?v=20260713-1"></script>
 </body>
 </html>
