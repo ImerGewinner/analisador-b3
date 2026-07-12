@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Analisador B3 — Qualidade e Liquidez</title>
-  <link rel="stylesheet" href="styles.css?v=20260713-1">
+  <title>Analisador B3 — Qualidade, Dividendos e Bazin</title>
+  <link rel="stylesheet" href="styles.css?v=20260713-3">
 </head>
 <body>
   <main class="wrap">
@@ -15,23 +15,23 @@
       <div>
         <span class="eyebrow">Dados públicos B3 + CVM</span>
         <h1>Analisador B3</h1>
-        <p>Etapa 1: liquidez. Etapa 2: qualidade com DFP/ITR. Etapa 3: payout e valuation, ainda bloqueados até a conciliação dos proventos.</p>
+        <p>Etapa 1: liquidez. Etapa 2: qualidade com DFP/ITR. Etapa 3: DPA 12M, payout, dividend yield e Bazin com fechamento oficial B3.</p>
       </div>
       <div id="updated" class="muted">Carregando...</div>
     </header>
 
     <section class="notice">
       <strong>Como ler:</strong>
-      <span><b>Liquidez OK</b> significa apenas que o papel pode seguir para a análise fundamentalista.</span>
-      <span><b>Aprovada parcial</b> ainda não é aprovação final: payout, proventos e métricas regulatórias financeiras podem estar pendentes.</span>
+      <span><b>Liquidez OK</b> apenas permite que o papel siga para a análise fundamentalista.</span>
+      <span><b>Bazin liberado</b> exige qualidade aprovada, proventos conciliados e ausência de Alerta Vermelho. A leitura é mecânica, não recomendação.</span>
     </section>
 
     <section class="cards">
       <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article>
       <article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article>
-      <article class="card"><span>Qualidade parcial</span><strong id="qualityApproved">-</strong></article>
+      <article class="card"><span>Aprovadas no filtro</span><strong id="qualityApproved">-</strong></article>
       <article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article>
-      <article class="card"><span>Pendentes</span><strong id="pending">-</strong></article>
+      <article class="card"><span>Bazin liberado</span><strong id="bazinEnabled">-</strong></article>
       <article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
     </section>
 
@@ -42,7 +42,7 @@
           <div><b>Etapa 1 — Liquidez</b><p id="methodInitial"></p></div>
           <div><b>Etapa 2 — Qualidade</b><p id="methodQuality"></p></div>
           <div><b>Financeiras</b><p id="methodFinancial"></p></div>
-          <div><b>Etapa 3 — Valuation</b><p id="methodValuation"></p></div>
+          <div><b>Etapa 3 — Bazin</b><p id="methodValuation"></p></div>
         </div>
       </details>
     </section>
@@ -52,7 +52,9 @@
       <select id="filter">
         <option value="INITIAL">Liquidez OK</option>
         <option value="">Todos</option>
-        <option value="APPROVED">Qualidade parcial</option>
+        <option value="QUALITY">Aprovadas no filtro</option>
+        <option value="BAZIN">Bazin liberado</option>
+        <option value="ATTRACTIVE">Atrativas pelo método</option>
         <option value="RED">Alerta vermelho</option>
         <option value="PENDING">Pendentes</option>
         <option value="OUT">Fora do filtro de liquidez</option>
@@ -61,6 +63,8 @@
         <option value="liquidity">Ordenar por liquidez</option>
         <option value="quality">Ordenar por score qualidade</option>
         <option value="roe">Ordenar por ROE 5A</option>
+        <option value="dy">Ordenar por DY 12M</option>
+        <option value="bazin">Ordenar por margem Bazin</option>
         <option value="ticker">Ordenar por ticker</option>
       </select>
     </section>
@@ -70,7 +74,7 @@
         <thead><tr>
           <th>Ticker</th><th>Empresa</th><th>Preço</th><th>Liquidez OK</th>
           <th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th>
-          <th>DL/EBITDA</th><th>Margem líquida</th><th>Lucros + 5A</th><th>Referência</th>
+          <th>DL/EBITDA</th><th>Margem líquida</th><th>DY 12M</th><th>Bazin</th>
         </tr></thead>
         <tbody id="body"></tbody>
       </table>
@@ -78,6 +82,6 @@
 
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260713-1"></script>
+  <script src="app.js?v=20260713-3"></script>
 </body>
 </html>
