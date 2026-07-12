@@ -38,6 +38,9 @@ jobs:
       - name: Reconciliar CNPJ e regenerar painel
         run: python fix_cnpj.py
 
+      - name: Atualizar proventos, payout, DY e Bazin
+        run: python dividends.py
+
       - name: Registrar banco e JSON atualizados
         run: |
           git config user.name "github-actions[bot]"
