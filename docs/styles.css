@@ -79,7 +79,7 @@ input, select {
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(23, 63, 107, .06);
 }
-table { width: 100%; border-collapse: collapse; min-width: 1450px; }
+table { width: 100%; border-collapse: collapse; min-width: 1380px; }
 thead { position: sticky; top: 0; z-index: 3; }
 th {
   background: var(--navy);
@@ -106,29 +106,77 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
   font-weight: 800;
   font-size: .72rem;
   line-height: 1.2;
-  max-width: 230px;
+  max-width: 250px;
+  white-space: normal;
 }
 .pill.ok { color: var(--green); background: var(--green-bg); }
 .pill.danger { color: var(--red); background: var(--red-bg); }
 .pill.pending { color: var(--amber); background: var(--amber-bg); }
 .pill.no { color: #58677d; background: var(--gray-bg); }
 .details-row td { padding: 0; background: #f8fbff; }
-.details-panel { padding: 20px; border-bottom: 2px solid #bfd4ec; }
-.fund-grid { display: grid; grid-template-columns: repeat(8, minmax(120px, 1fr)); gap: 10px; }
-.fund-grid div {
+.details-panel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 20px;
+  border-bottom: 2px solid #bfd4ec;
+}
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.status-step {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 14px;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 12px;
 }
-.fund-grid span { display: block; color: var(--muted); font-size: .75rem; margin-bottom: 5px; }
-.quality-note { margin: 14px 0; padding: 12px 14px; border-left: 4px solid var(--navy); background: #eef5fd; }
-.criteria { display: grid; grid-template-columns: repeat(3, minmax(250px, 1fr)); gap: 10px; }
+.status-step > span:first-child {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.status-step strong { min-width: 0; line-height: 1.25; }
+.section-title {
+  margin: 16px 0 10px;
+  color: var(--navy);
+  font-weight: 800;
+  font-size: .92rem;
+}
+.fund-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fund-grid div {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px;
+}
+.fund-grid span { display: block; color: var(--muted); font-size: .75rem; margin-bottom: 6px; }
+.fund-grid strong {
+  display: block;
+  font-size: .96rem;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.quality-note { margin: 16px 0; padding: 12px 14px; border-left: 4px solid var(--navy); background: #eef5fd; line-height: 1.45; }
+.criteria { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .criterion {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
   align-items: start;
+  min-width: 0;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -137,12 +185,13 @@ td small { display: block; color: var(--muted); margin-top: 4px; max-width: 230p
 .criterion small { display: block; color: var(--muted); margin-top: 3px; }
 .criterion-value { font-weight: 800; text-align: right; }
 .criterion p { grid-column: 1 / -1; margin: 2px 0 0; color: var(--muted); font-size: .78rem; line-height: 1.4; }
-.sources { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; color: var(--muted); font-size: .78rem; }
+.sources { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 16px; color: var(--muted); font-size: .78rem; }
 footer { color: var(--muted); padding: 18px 2px 6px; line-height: 1.5; }
 @media (max-width: 1200px) {
   .cards { grid-template-columns: repeat(3, 1fr); }
   .method-grid { grid-template-columns: repeat(2, 1fr); }
-  .fund-grid { grid-template-columns: repeat(4, 1fr); }
+  .status-strip { grid-template-columns: 1fr; }
+  .fund-grid { grid-template-columns: repeat(2, 1fr); }
   .criteria { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {
@@ -152,6 +201,6 @@ footer { color: var(--muted); padding: 18px 2px 6px; line-height: 1.5; }
   .notice { grid-template-columns: 1fr; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .toolbar { grid-template-columns: 1fr; }
-  .method-grid, .criteria { grid-template-columns: 1fr; }
-  .fund-grid { grid-template-columns: repeat(2, 1fr); }
+  .method-grid, .criteria, .fund-grid { grid-template-columns: 1fr; }
+  .details-panel { padding: 14px; }
 }
