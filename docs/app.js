@@ -12,9 +12,10 @@ function setText(id, value) {
 }
 
 function badgeClass(status) {
-  if (status === "SIM" || String(status).startsWith("APROVADA")) return "ok";
-  if (status === "ALERTA VERMELHO") return "danger";
-  if (status === "FORA DO UNIVERSO INICIAL" || status === "NÃO") return "no";
+  const text = String(status || "");
+  if (text === "SIM" || text.startsWith("APROVAD")) return "ok";
+  if (text === "ALERTA VERMELHO" || text === "REPROVADO") return "danger";
+  if (text === "FORA DO UNIVERSO INICIAL" || text === "NÃO") return "no";
   return "pending";
 }
 
@@ -30,19 +31,38 @@ function criteriaHtml(criteria) {
 }
 
 function detailsRow(item) {
+  const valuationLabel = String(item.valuationStatus || "BLOQUEADO").replace("BLOQUEADO — ", "");
   return `<tr class="details-row" data-details="${esc(item.ticker)}"><td colspan="11">
     <div class="details-panel">
-      <div class="fund-grid">
-        <div><span>Receita LTM</span><strong>${esc(item.receitaLtm)}</strong></div>
-        <div><span>Lucro líquido LTM</span><strong>${esc(item.lucroLtm)}</strong></div>
-        <div><span>EBITDA LTM</span><strong>${esc(item.ebitdaLtm)}</strong></div>
-        <div><span>Patrimônio líquido</span><strong>${esc(item.patrimonio)}</strong></div>
-        <div><span>Caixa</span><strong>${esc(item.caixa)}</strong></div>
-        <div><span>Dívida bruta</span><strong>${esc(item.dividaBruta)}</strong></div>
-        <div><span>Dívida líquida</span><strong>${esc(item.dividaLiquida)}</strong></div>
-        <div><span>Payout</span><strong>${esc(item.payout)}</strong></div>
+      <div class="status-strip">
+        <div class="status-step">
+          <span>Etapa 1</span><strong>Liquidez e negociação</strong>
+          <span class="pill ${badgeClass(item.elegivelInicial)}">${item.elegivelInicial === "SIM" ? "OK" : "REPROVADA"}</span>
+        </div>
+        <div class="status-step">
+          <span>Etapa 2</span><strong>Qualidade fundamentalista</strong>
+          <span class="pill ${badgeClass(item.filtroQualidade)}">${esc(item.filtroQualidade)}</span>
+        </div>
+        <div class="status-step">
+          <span>Etapa 3</span><strong>Payout e valuation</strong>
+          <span class="pill pending">${esc(valuationLabel)}</span>
+        </div>
       </div>
+
+      <div class="section-title">Indicadores financeiros</div>
+      <div class="fund-grid">
+        <div><span>Receita LTM</span><strong>${esc(item.receitaLtm || "—")}</strong></div>
+        <div><span>Lucro líquido LTM</span><strong>${esc(item.lucroLtm || "—")}</strong></div>
+        <div><span>EBITDA LTM</span><strong>${esc(item.ebitdaLtm || "—")}</strong></div>
+        <div><span>Patrimônio líquido</span><strong>${esc(item.patrimonio || "—")}</strong></div>
+        <div><span>Caixa</span><strong>${esc(item.caixa || "—")}</strong></div>
+        <div><span>Dívida bruta</span><strong>${esc(item.dividaBruta || "—")}</strong></div>
+        <div><span>Dívida líquida</span><strong>${esc(item.dividaLiquida || "—")}</strong></div>
+        <div><span>Payout</span><strong>${esc(item.payout || "Pendente")}</strong></div>
+      </div>
+
       <div class="quality-note"><b>Conclusão do filtro:</b> ${esc(item.motivoQualidade)}</div>
+      <div class="section-title">Checklist Anti-Lixo</div>
       ${criteriaHtml(item.criterios)}
       <div class="sources">
         <span><b>CNPJ:</b> ${esc(item.cnpj)}</span>
@@ -87,7 +107,7 @@ function render() {
       <td><strong>${esc(item.ticker)}</strong><small>${esc(item.segmento)}</small></td>
       <td>${esc(item.empresa)}</td>
       <td>${esc(item.preco)}<small>${esc(item.variacao)}</small></td>
-      <td><span class="pill ${badgeClass(item.elegivelInicial)}">${esc(item.elegivelInicial)}</span><small>${esc(item.motivoInicial)}</small></td>
+      <td><span class="pill ${badgeClass(item.elegivelInicial)}">${item.elegivelInicial === "SIM" ? "OK" : "NÃO"}</span><small>${esc(item.motivoInicial)}</small></td>
       <td><span class="pill ${badgeClass(item.filtroQualidade)}">${esc(item.filtroQualidade)}</span>${item.scoreQualidade !== null ? `<small>Score ${esc(item.scoreQualidade)}/100</small>` : ""}</td>
       <td>${esc(item.roe5a)}</td><td>${esc(item.cagrLucro5a)}</td><td>${esc(item.dlEbitda)}</td>
       <td>${esc(item.margemLiquida)}<small>${esc(item.tendenciaMargem)}</small></td>
