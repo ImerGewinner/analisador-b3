@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import csv
 import io
 import json
 import sqlite3
@@ -11,10 +12,17 @@ from pathlib import Path
 
 import requests
 
+from fundamentals import (
+    FUNDAMENTALS_SOURCE,
+    ensure_fundamentals_schema,
+    load_and_score_fundamentals,
+)
+
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
 DOCS_DIR = ROOT / "docs"
 DB_PATH = DATA_DIR / "analisador.db"
+SEED_PATH = DATA_DIR / "universe_seed.csv"
 TIMEZONE_LABEL = "America/Manaus"
 
 B3_COMPANIES_API = "https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetInitialCompanies/"
@@ -33,6 +41,12 @@ def ensure_dirs() -> None:
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def ensure_column(conn: sqlite3.Connection, table: str, column: str, ddl: str) -> None:
+    cols = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+    if column not in cols:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
+
 def connect() -> sqlite3.Connection:
     ensure_dirs()
     conn = sqlite3.connect(DB_PATH)
@@ -42,6 +56,8 @@ def connect() -> sqlite3.Connection:
         PRAGMA journal_mode=WAL;
         CREATE TABLE IF NOT EXISTS universe (
             ticker TEXT PRIMARY KEY,
+            cnpj TEXT,
+            cvm_code TEXT,
             root TEXT,
             company TEXT,
             trading_name TEXT,
@@ -80,6 +96,10 @@ def connect() -> sqlite3.Connection:
         );
         """
     )
+    ensure_column(conn, "universe", "cnpj", "TEXT")
+    ensure_column(conn, "universe", "cvm_code", "TEXT")
+    ensure_fundamentals_schema(conn)
+    conn.commit()
     return conn
 
 
@@ -89,6 +109,37 @@ def log(conn: sqlite3.Connection, status: str, message: str) -> None:
         (datetime.now(timezone.utc).isoformat(), status, message),
     )
     conn.commit()
+
+
+def normalize_cvm_code(value: str) -> str:
+    value = str(value or "").strip()
+    if value.endswith(".0"):
+        value = value[:-2]
+    return value
+
+
+def load_seed() -> tuple[dict[str, dict], dict[str, dict]]:
+    by_ticker: dict[str, dict] = {}
+    by_root: dict[str, dict] = {}
+    if not SEED_PATH.exists():
+        return by_ticker, by_root
+    with SEED_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
+        for row in csv.DictReader(handle):
+            ticker = str(row.get("ticker") or "").upper().strip()
+            root = str(row.get("root") or "").upper().strip()
+            if not ticker or not root:
+                continue
+            item = {
+                "ticker": ticker,
+                "root": root,
+                "cnpj": str(row.get("cnpj") or "").strip(),
+                "cvm_code": normalize_cvm_code(row.get("cvm_code") or ""),
+                "company": str(row.get("company") or "").strip(),
+                "trading_name": str(row.get("trading_name") or "").strip(),
+            }
+            by_ticker[ticker] = item
+            by_root[root] = item
+    return by_ticker, by_root
 
 
 def b3_json(url: str, payload: dict) -> dict:
@@ -238,6 +289,7 @@ def update_universe(
     quote_day: date,
     quotes: list[dict],
 ) -> int:
+    seed_by_ticker, seed_by_root = load_seed()
     previous = {
         row["ticker"]: row["close"]
         for row in conn.execute(
@@ -257,8 +309,9 @@ def update_universe(
     changed = 0
     for ticker, quote in by_ticker.items():
         root = ticker[:4]
-        company = companies.get(root)
-        if not company:
+        company = companies.get(root) or {}
+        seed = seed_by_ticker.get(ticker) or seed_by_root.get(root) or {}
+        if not company and not seed:
             continue
         hist = list(
             conn.execute(
@@ -298,12 +351,13 @@ def update_universe(
         conn.execute(
             """
             INSERT INTO universe(
-              ticker,root,company,trading_name,segment,listing_date,price,variation,
+              ticker,cnpj,cvm_code,root,company,trading_name,segment,listing_date,price,variation,
               volume_day,avg20,avg60,sessions20,sessions60,stale_sessions,principal,
               passes_liquidity,passes_activity,eligible,reason,quote_date,source,updated_at
-            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(ticker) DO UPDATE SET
-              root=excluded.root,company=excluded.company,trading_name=excluded.trading_name,
+              cnpj=excluded.cnpj,cvm_code=excluded.cvm_code,root=excluded.root,
+              company=excluded.company,trading_name=excluded.trading_name,
               segment=excluded.segment,listing_date=excluded.listing_date,price=excluded.price,
               variation=excluded.variation,volume_day=excluded.volume_day,avg20=excluded.avg20,
               avg60=excluded.avg60,sessions20=excluded.sessions20,sessions60=excluded.sessions60,
@@ -314,11 +368,13 @@ def update_universe(
             """,
             (
                 ticker,
+                seed.get("cnpj", ""),
+                seed.get("cvm_code", ""),
                 root,
-                company["company"] or quote["company"],
-                company["trading_name"],
-                company["segment"],
-                company["listing_date"],
+                company.get("company") or seed.get("company") or quote["company"],
+                company.get("trading_name") or seed.get("trading_name") or "",
+                company.get("segment") or "",
+                company.get("listing_date") or "",
                 quote["close"],
                 variation,
                 quote["volume"],
@@ -361,38 +417,111 @@ def fmt_money(value: float | None) -> str:
     return f"R$ {value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def fmt_pct(value: float | None) -> str:
+def fmt_pct(value: float | None, signed: bool = False) -> str:
     if value is None:
         return ""
-    return f"{value*100:+.2f}%".replace(".", ",")
+    sign = "+" if signed and value > 0 else ""
+    return f"{sign}{value*100:.2f}%".replace(".", ",")
+
+
+def fmt_multiple(value: float | None) -> str:
+    if value is None:
+        return ""
+    return f"{value:.2f}x".replace(".", ",")
 
 
 def build_site(conn: sqlite3.Connection) -> dict:
     rows = list(
         conn.execute(
             """
-            SELECT * FROM universe
-            WHERE principal='SIM'
-            ORDER BY eligible DESC,avg20 DESC,ticker
+            SELECT
+                u.*,
+                f.reference_date fundamentals_ref,
+                f.origin fundamentals_origin,
+                f.revenue_ltm,
+                f.profit_ltm,
+                f.ebitda_ltm,
+                f.equity,
+                f.cash,
+                f.debt,
+                f.net_debt,
+                f.roe_avg_5y,
+                f.profit_cagr_5y,
+                f.net_margin_latest,
+                f.margin_trend,
+                f.positive_profits_5y,
+                f.net_debt_ebitda,
+                f.payout,
+                f.is_financial,
+                f.quality_status,
+                f.quality_score,
+                f.failures,
+                f.pending,
+                f.reason quality_reason,
+                f.criteria_json,
+                f.source_url fundamentals_source
+            FROM universe u
+            LEFT JOIN fundamentals f ON f.cnpj=u.cnpj
+            WHERE u.principal='SIM'
+            ORDER BY
+                CASE WHEN u.eligible='SIM' THEN 0 ELSE 1 END,
+                CASE
+                    WHEN f.quality_status LIKE 'APROVADA%' THEN 0
+                    WHEN f.quality_status='ALERTA VERMELHO' THEN 1
+                    ELSE 2
+                END,
+                u.avg20 DESC,
+                u.ticker
             """
         )
     )
-    items = [
-        {
-            "ticker": row["ticker"],
-            "empresa": row["company"],
-            "segmento": row["segment"],
-            "preco": fmt_money(row["price"]),
-            "variacao": fmt_pct(row["variation"]),
-            "volume20": fmt_money(row["avg20"]),
-            "pregoes20": row["sessions20"],
-            "elegivel": row["eligible"],
-            "motivo": row["reason"],
-            "data": row["quote_date"],
-            "fonte": row["source"],
-        }
-        for row in rows
-    ]
+
+    items = []
+    for row in rows:
+        criteria = []
+        try:
+            criteria = json.loads(row["criteria_json"] or "[]")
+        except json.JSONDecodeError:
+            criteria = []
+        items.append(
+            {
+                "ticker": row["ticker"],
+                "empresa": row["company"],
+                "segmento": row["segment"],
+                "preco": fmt_money(row["price"]),
+                "precoRaw": row["price"],
+                "variacao": fmt_pct(row["variation"], signed=True),
+                "volume20": fmt_money(row["avg20"]),
+                "pregoes20": row["sessions20"],
+                "elegivelInicial": row["eligible"],
+                "motivoInicial": row["reason"],
+                "statusQualidade": row["quality_status"] or "PENDENTE FUNDAMENTOS",
+                "scoreQualidade": row["quality_score"],
+                "falhas": row["failures"],
+                "pendencias": row["pending"],
+                "motivoQualidade": row["quality_reason"] or "DFP/ITR ainda não consolidado.",
+                "financeira": bool(row["is_financial"]),
+                "roe5a": fmt_pct(row["roe_avg_5y"]),
+                "cagrLucro5a": fmt_pct(row["profit_cagr_5y"]),
+                "margemLiquida": fmt_pct(row["net_margin_latest"]),
+                "tendenciaMargem": row["margin_trend"] or "",
+                "lucrosPositivos5a": row["positive_profits_5y"],
+                "dlEbitda": "N/A SETOR" if row["is_financial"] else fmt_multiple(row["net_debt_ebitda"]),
+                "receitaLtm": fmt_money(row["revenue_ltm"]),
+                "lucroLtm": fmt_money(row["profit_ltm"]),
+                "ebitdaLtm": fmt_money(row["ebitda_ltm"]),
+                "patrimonio": fmt_money(row["equity"]),
+                "dividaLiquida": fmt_money(row["net_debt"]),
+                "referenciaFundamentos": row["fundamentals_ref"] or "",
+                "origemFundamentos": row["fundamentals_origin"] or "",
+                "criterios": criteria,
+                "dataCotacao": row["quote_date"],
+                "fonteCotacao": row["source"],
+                "fonteFundamentos": row["fundamentals_source"] or FUNDAMENTALS_SOURCE,
+                "valuationStatus": "BLOQUEADO — aguardando proventos/payout e aprovação no filtro",
+            }
+        )
+
     latest_run = conn.execute(
         "SELECT run_at,status,message FROM runs ORDER BY id DESC LIMIT 1"
     ).fetchone()
@@ -400,11 +529,27 @@ def build_site(conn: sqlite3.Connection) -> dict:
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "timezone": TIMEZONE_LABEL,
         "count": len(items),
-        "eligible": sum(item["elegivel"] == "SIM" for item in items),
-        "latestQuoteDate": max((item["data"] for item in items), default=""),
+        "initialEligible": sum(item["elegivelInicial"] == "SIM" for item in items),
+        "qualityApproved": sum(item["statusQualidade"] == "APROVADA NO FILTRO" for item in items),
+        "qualityPartialApproved": sum(item["statusQualidade"].startswith("APROVADA PARCIAL") for item in items),
+        "redAlerts": sum(item["statusQualidade"] == "ALERTA VERMELHO" for item in items),
+        "pendingFundamentals": sum(item["statusQualidade"].startswith("PENDENTE") for item in items),
+        "latestQuoteDate": max((item["dataCotacao"] for item in items), default=""),
+        "latestFundamentalsDate": max((item["referenciaFundamentos"] for item in items), default=""),
         "lastRun": dict(latest_run) if latest_run else None,
         "items": items,
-        "disclaimer": "Análise educacional. Não constitui recomendação de compra ou venda.",
+        "methodology": {
+            "roeMin": "12,00%",
+            "profitGrowthMin": "acima de 0,00%",
+            "netDebtEbitdaMax": "3,00x",
+            "positiveProfitYears": "mínimo 4 de 5 anos",
+            "margin": "estável ou crescente",
+            "financialSector": "dívida líquida/EBITDA não aplicada; análise parcial até métricas prudenciais",
+        },
+        "disclaimer": (
+            "Análise educacional baseada em dados públicos B3/CVM. "
+            "Não constitui recomendação de compra ou venda. Valuation permanece bloqueado nesta etapa."
+        ),
     }
     (DOCS_DIR / "data.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -415,13 +560,25 @@ def build_site(conn: sqlite3.Connection) -> dict:
 def run() -> int:
     conn = connect()
     try:
-        log(conn, "INICIADO", "Atualização iniciada.")
+        log(conn, "INICIADO", "Atualização de mercado e fundamentos iniciada.")
         companies = fetch_companies()
         backfill_history(conn)
         quote_day, quotes = fetch_latest_cotahist()
         save_history(conn, quotes)
         changed = update_universe(conn, companies, quote_day, quotes)
-        log(conn, "OK", f"Mercado B3 atualizado: {changed} ativos; base {quote_day}.")
+        issuers = [dict(row) for row in conn.execute(
+            "SELECT DISTINCT cnpj,cvm_code,company,segment FROM universe WHERE cnpj<>''"
+        )]
+        fundamentals_summary = load_and_score_fundamentals(conn, issuers)
+        log(
+            conn,
+            "OK",
+            (
+                f"Mercado B3: {changed} ativos; base {quote_day}. "
+                f"Fundamentos: {fundamentals_summary['processed']} emissores processados, "
+                f"{fundamentals_summary['red_alerts']} alertas vermelhos."
+            ),
+        )
         payload = build_site(conn)
         (DOCS_DIR / "status.json").write_text(
             json.dumps(
@@ -429,14 +586,19 @@ def run() -> int:
                     "status": "OK",
                     "updatedAt": payload["generatedAt"],
                     "quoteDate": payload["latestQuoteDate"],
+                    "fundamentalsDate": payload["latestFundamentalsDate"],
                     "companies": payload["count"],
+                    "initialEligible": payload["initialEligible"],
+                    "qualityApproved": payload["qualityApproved"],
+                    "qualityPartialApproved": payload["qualityPartialApproved"],
+                    "redAlerts": payload["redAlerts"],
                 },
                 ensure_ascii=False,
                 indent=2,
             ),
             encoding="utf-8",
         )
-        print(json.dumps({"status": "OK", "ativos": changed}, ensure_ascii=False))
+        print(json.dumps({"status": "OK", "ativos": changed, **fundamentals_summary}, ensure_ascii=False))
         return 0
     except Exception as exc:
         log(conn, "ERRO", repr(exc))
