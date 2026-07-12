@@ -6,6 +6,11 @@ function esc(value) {
   })[char]);
 }
 
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+
 function badgeClass(status) {
   if (status === "SIM" || String(status).startsWith("APROVADA")) return "ok";
   if (status === "ALERTA VERMELHO") return "danger";
@@ -51,16 +56,16 @@ function detailsRow(item) {
 }
 
 function filteredRows() {
-  const query = document.getElementById("q").value.trim().toUpperCase();
-  const filter = document.getElementById("filter").value;
-  const sort = document.getElementById("sort").value;
+  const query = document.getElementById("q")?.value.trim().toUpperCase() || "";
+  const filter = document.getElementById("filter")?.value || "";
+  const sort = document.getElementById("sort")?.value || "liquidity";
   let rows = DATA.filter(item => {
     const matchesQuery = !query || `${item.ticker} ${item.empresa}`.toUpperCase().includes(query);
     let matchesFilter = true;
     if (filter === "INITIAL") matchesFilter = item.elegivelInicial === "SIM";
-    if (filter === "APPROVED") matchesFilter = item.elegivelInicial === "SIM" && item.filtroQualidadeOriginal.startsWith("APROVADA");
+    if (filter === "APPROVED") matchesFilter = item.elegivelInicial === "SIM" && String(item.filtroQualidadeOriginal || "").startsWith("APROVADA");
     if (filter === "RED") matchesFilter = item.elegivelInicial === "SIM" && item.filtroQualidadeOriginal === "ALERTA VERMELHO";
-    if (filter === "PENDING") matchesFilter = item.elegivelInicial === "SIM" && item.filtroQualidadeOriginal.startsWith("PENDENTE");
+    if (filter === "PENDING") matchesFilter = item.elegivelInicial === "SIM" && String(item.filtroQualidadeOriginal || "").startsWith("PENDENTE");
     if (filter === "OUT") matchesFilter = item.elegivelInicial !== "SIM";
     return matchesQuery && matchesFilter;
   });
@@ -74,8 +79,10 @@ function filteredRows() {
 }
 
 function render() {
+  const body = document.getElementById("body");
+  if (!body) return;
   const rows = filteredRows();
-  document.getElementById("body").innerHTML = rows.map(item => `
+  body.innerHTML = rows.map(item => `
     <tr class="main-row" data-ticker="${esc(item.ticker)}" tabindex="0">
       <td><strong>${esc(item.ticker)}</strong><small>${esc(item.segmento)}</small></td>
       <td>${esc(item.empresa)}</td>
@@ -91,6 +98,7 @@ function render() {
   document.querySelectorAll(".main-row").forEach(row => {
     const toggle = () => {
       const details = document.querySelector(`[data-details="${CSS.escape(row.dataset.ticker)}"]`);
+      if (!details) return;
       details.hidden = !details.hidden;
       row.classList.toggle("open", !details.hidden);
     };
@@ -112,30 +120,31 @@ function formatGeneratedAt(value) {
 
 async function load() {
   try {
-    const response = await fetch(`data.json?t=${Date.now()}`);
+    const response = await fetch(`data.json?t=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     DATA = payload.items || [];
-    document.getElementById("count").textContent = payload.count ?? 0;
-    document.getElementById("initialEligible").textContent = payload.initialEligible ?? 0;
-    document.getElementById("qualityApproved").textContent = payload.qualityPartialApproved ?? 0;
-    document.getElementById("redAlerts").textContent = payload.redAlerts ?? 0;
-    document.getElementById("pending").textContent = payload.pendingFundamentals ?? 0;
-    document.getElementById("quoteDate").textContent = payload.latestQuoteDate || "-";
-    document.getElementById("updated").textContent = `Gerado em ${formatGeneratedAt(payload.generatedAt)}`;
-    document.getElementById("disclaimer").textContent = payload.disclaimer || "";
+    setText("count", payload.count ?? 0);
+    setText("initialEligible", payload.initialEligible ?? 0);
+    setText("qualityApproved", payload.qualityPartialApproved ?? 0);
+    setText("redAlerts", payload.redAlerts ?? 0);
+    setText("pending", payload.pendingFundamentals ?? 0);
+    setText("quoteDate", payload.latestQuoteDate || "-");
+    setText("updated", `Gerado em ${formatGeneratedAt(payload.generatedAt)}`);
+    setText("disclaimer", payload.disclaimer || "");
     const method = payload.methodology || {};
-    document.getElementById("methodInitial").textContent = method.initial || "";
-    document.getElementById("methodQuality").textContent = method.quality || "";
-    document.getElementById("methodFinancial").textContent = method.financial || "";
-    document.getElementById("methodValuation").textContent = method.valuation || "";
+    setText("methodInitial", method.initial || "");
+    setText("methodQuality", method.quality || "");
+    setText("methodFinancial", method.financial || "");
+    setText("methodValuation", method.valuation || "");
     render();
   } catch (error) {
-    document.getElementById("updated").textContent = `Erro ao carregar dados: ${error.message}`;
+    setText("updated", `Erro ao carregar dados: ${error.message}`);
   }
 }
 
 ["q", "filter", "sort"].forEach(id => {
-  document.getElementById(id).addEventListener(id === "q" ? "input" : "change", render);
+  const element = document.getElementById(id);
+  if (element) element.addEventListener(id === "q" ? "input" : "change", render);
 });
 load();
