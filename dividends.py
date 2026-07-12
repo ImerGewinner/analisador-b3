@@ -7,7 +7,6 @@ import re
 import sqlite3
 import unicodedata
 from datetime import date, datetime, timedelta, timezone
-from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -126,7 +125,6 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
           ON cash_dividends(ticker,last_date_prior);
         CREATE INDEX IF NOT EXISTS idx_cash_dividends_root
           ON cash_dividends(root);
-
         CREATE TABLE IF NOT EXISTS dividend_imports(
           root TEXT PRIMARY KEY,
           imported_at TEXT,
@@ -137,7 +135,6 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
           preferred_shares INTEGER,
           source_url TEXT
         );
-
         CREATE TABLE IF NOT EXISTS dividend_metrics(
           ticker TEXT PRIMARY KEY,
           root TEXT,
@@ -164,9 +161,7 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
 
 def payload_url(root: str) -> str:
     payload = {"issuingCompany": root, "language": "pt-br"}
-    token = base64.b64encode(
-        json.dumps(payload, separators=(",", ":")).encode("utf-8")
-    ).decode("ascii")
+    token = base64.b64encode(json.dumps(payload, separators=(",", ":")).encode("utf-8")).decode("ascii")
     return B3_SUPPLEMENT_API + token
 
 
@@ -187,16 +182,12 @@ def is_dpa_event(label: object) -> bool:
 
 
 def event_key(root: str, ticker: str, label: str, approved: str, last_com: str, payment: str, rate: float, related: str) -> str:
-    raw = "|".join(
-        [root, ticker, label, approved, last_com, payment, f"{rate:.12f}", related]
-    )
+    raw = "|".join([root, ticker, label, approved, last_com, payment, f"{rate:.12f}", related])
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def imported_recently(conn: sqlite3.Connection, root: str) -> bool:
-    row = conn.execute(
-        "SELECT imported_at,status FROM dividend_imports WHERE root=?", (root,)
-    ).fetchone()
+    row = conn.execute("SELECT imported_at,status FROM dividend_imports WHERE root=?", (root,)).fetchone()
     if not row or row["status"] != "OK" or not row["imported_at"]:
         return False
     try:
@@ -208,25 +199,20 @@ def imported_recently(conn: sqlite3.Connection, root: str) -> bool:
 
 def import_root(conn: sqlite3.Connection, root: str, force: bool = False) -> tuple[str, int]:
     if not force and imported_recently(conn, root):
-        count = int(
-            conn.execute(
-                "SELECT COUNT(*) FROM cash_dividends WHERE root=?", (root,)
-            ).fetchone()[0]
-        )
+        count = int(conn.execute("SELECT COUNT(*) FROM cash_dividends WHERE root=?", (root,)).fetchone()[0])
         return "CACHE", count
-
     now = datetime.now(timezone.utc).isoformat()
     try:
         payload = fetch_supplement(root)
         info = payload.get("info") or payload.get("Info") or {}
         events = payload.get("cashDividends") or payload.get("CashDividends") or []
+        if not isinstance(info, dict):
+            info = {}
         if not isinstance(events, list):
             events = []
-
         total_shares = parse_integer(info.get("totalNumberShares"))
         common_shares = parse_integer(info.get("numberCommonShares"))
         preferred_shares = parse_integer(info.get("numberPreferredShares"))
-
         rows: list[tuple] = []
         for event in events:
             if not isinstance(event, dict):
@@ -242,24 +228,7 @@ def import_root(conn: sqlite3.Connection, root: str, force: bool = False) -> tup
             if rate is None or rate < 0:
                 continue
             key = event_key(root, ticker, label, approved, last_com, payment, rate, related)
-            rows.append(
-                (
-                    key,
-                    root,
-                    ticker,
-                    label,
-                    approved,
-                    last_com,
-                    payment,
-                    rate,
-                    related,
-                    remarks,
-                    1 if is_dpa_event(label) else 0,
-                    B3_PUBLIC_SOURCE,
-                    now,
-                )
-            )
-
+            rows.append((key, root, ticker, label, approved, last_com, payment, rate, related, remarks, 1 if is_dpa_event(label) else 0, B3_PUBLIC_SOURCE, now))
         conn.execute("DELETE FROM cash_dividends WHERE root=?", (root,))
         conn.executemany(
             """
@@ -280,16 +249,7 @@ def import_root(conn: sqlite3.Connection, root: str, force: bool = False) -> tup
               total_shares=excluded.total_shares,common_shares=excluded.common_shares,
               preferred_shares=excluded.preferred_shares,source_url=excluded.source_url
             """,
-            (
-                root,
-                now,
-                "OK",
-                f"{len(rows)} evento(s) retornado(s)",
-                total_shares,
-                common_shares,
-                preferred_shares,
-                B3_PUBLIC_SOURCE,
-            ),
+            (root, now, "OK", f"{len(rows)} evento(s) retornado(s)", total_shares, common_shares, preferred_shares, B3_PUBLIC_SOURCE),
         )
         conn.commit()
         return "OK", len(rows)
@@ -309,22 +269,13 @@ def import_root(conn: sqlite3.Connection, root: str, force: bool = False) -> tup
 
 
 def replace_payout_criterion(criteria: list[dict], payout: float | None, note: str) -> list[dict]:
-    if payout is None:
-        replacement = {
-            "name": "Payout",
-            "value": "Pendente",
-            "limit": "< 90,00%",
-            "status": "PENDENTE",
-            "note": note,
-        }
-    else:
-        replacement = {
-            "name": "Payout",
-            "value": fmt_pct(payout),
-            "limit": "< 90,00%",
-            "status": "APROVADO" if payout < PAYOUT_MAX else "REPROVADO",
-            "note": "Estimado por DPA 12M × ações totais ÷ lucro líquido LTM.",
-        }
+    replacement = {
+        "name": "Payout",
+        "value": "Pendente" if payout is None else fmt_pct(payout),
+        "limit": "< 90,00%",
+        "status": "PENDENTE" if payout is None else ("APROVADO" if payout < PAYOUT_MAX else "REPROVADO"),
+        "note": note if payout is None else "Estimado por DPA 12M × ações totais ÷ lucro líquido LTM.",
+    }
     result: list[dict] = []
     replaced = False
     for criterion in criteria:
@@ -350,15 +301,10 @@ def recalc_quality(conn: sqlite3.Connection, cnpj: str, payout: float | None, no
     failures = sum(c.get("status") == "REPROVADO" for c in criteria)
     passes = sum(c.get("status") == "APROVADO" for c in criteria)
     pending = sum(c.get("status") not in {"APROVADO", "REPROVADO"} for c in criteria)
-
     old_reason = str(row["reason"] or "")
-    structural_red = any(
-        marker in norm_text(old_reason)
-        for marker in ("PREJUIZO RECORRENTE", "DIVIDA EM DETERIORACAO ACELERADA")
-    )
+    structural_red = any(marker in norm_text(old_reason) for marker in ("PREJUIZO RECORRENTE", "DIVIDA EM DETERIORACAO ACELERADA"))
     red = failures >= 2 or structural_red
     financial = bool(row["is_financial"])
-
     if red:
         status = "ALERTA VERMELHO"
     elif financial:
@@ -367,7 +313,6 @@ def recalc_quality(conn: sqlite3.Connection, cnpj: str, payout: float | None, no
         status = "PENDENTE QUALIDADE"
     else:
         status = "APROVADA NO FILTRO"
-
     evaluated = passes + failures
     score = round(100 * passes / evaluated, 1) if evaluated else None
     reasons: list[str] = []
@@ -381,84 +326,56 @@ def recalc_quality(conn: sqlite3.Connection, cnpj: str, payout: float | None, no
         reasons.append(f"{pending} item(ns) pendente(s)")
     if not reasons:
         reasons.append("sem reprovações no checklist calculável")
-
     conn.execute(
         """
         UPDATE fundamentals
            SET payout=?,quality_status=?,quality_score=?,failures=?,pending=?,reason=?,criteria_json=?,updated_at=?
          WHERE cnpj=?
         """,
-        (
-            payout,
-            status,
-            score,
-            failures,
-            pending,
-            "; ".join(reasons),
-            json.dumps(criteria, ensure_ascii=False, separators=(",", ":")),
-            datetime.now(timezone.utc).isoformat(),
-            cnpj,
-        ),
+        (payout, status, score, failures, pending, "; ".join(reasons), json.dumps(criteria, ensure_ascii=False, separators=(",", ":")), datetime.now(timezone.utc).isoformat(), cnpj),
     )
     return status
 
 
 def calculate_metrics(conn: sqlite3.Connection) -> dict[str, int]:
     conn.execute("DELETE FROM dividend_metrics")
-    principals = list(
-        conn.execute(
-            """
-            SELECT u.ticker,u.root,u.cnpj,u.price,u.quote_date,u.eligible,
-                   f.profit_ltm,f.quality_status,f.is_financial
-              FROM universe u
-              LEFT JOIN fundamentals f ON f.cnpj=u.cnpj
-             WHERE u.principal='SIM'
-            """
-        )
-    )
+    principals = list(conn.execute(
+        """
+        SELECT u.ticker,u.root,u.cnpj,u.price,u.quote_date,u.eligible,
+               f.profit_ltm,f.quality_status,f.is_financial
+          FROM universe u
+          LEFT JOIN fundamentals f ON f.cnpj=u.cnpj
+         WHERE u.principal='SIM'
+        """
+    ))
     now = datetime.now(timezone.utc).isoformat()
     counters = {"processed": 0, "with_dpa": 0, "bazin_enabled": 0, "bazin_attractive": 0}
-
     for row in principals:
-        ticker = row["ticker"]
-        root = row["root"]
-        cnpj = row["cnpj"] or ""
-        price = row["price"]
+        ticker, root, cnpj, price = row["ticker"], row["root"], row["cnpj"] or "", row["price"]
         quote_text = row["quote_date"] or date.today().isoformat()
         try:
             quote_day = date.fromisoformat(quote_text[:10])
         except ValueError:
             quote_day = date.today()
         window_start = quote_day - timedelta(days=365)
-
-        imp = conn.execute(
-            "SELECT * FROM dividend_imports WHERE root=?", (root,)
-        ).fetchone()
+        imp = conn.execute("SELECT * FROM dividend_imports WHERE root=?", (root,)).fetchone()
         import_ok = bool(imp and imp["status"] == "OK")
         total_shares = imp["total_shares"] if imp else None
-
-        events = list(
-            conn.execute(
-                """
-                SELECT * FROM cash_dividends
-                 WHERE ticker=? AND eligible_dpa=1
-                   AND last_date_prior>=? AND last_date_prior<=?
-                 ORDER BY last_date_prior DESC,payment_date DESC
-                """,
-                (ticker, window_start.isoformat(), quote_day.isoformat()),
-            )
-        )
+        events = list(conn.execute(
+            """
+            SELECT * FROM cash_dividends
+             WHERE ticker=? AND eligible_dpa=1
+               AND last_date_prior>=? AND last_date_prior<=?
+             ORDER BY last_date_prior DESC,payment_date DESC
+            """,
+            (ticker, window_start.isoformat(), quote_day.isoformat()),
+        ))
         dpa = sum(float(event["rate"] or 0) for event in events) if import_ok else None
         event_count = len(events) if import_ok else 0
         profit = row["profit_ltm"]
-        lpa = (
-            float(profit) / int(total_shares)
-            if profit is not None and float(profit) > 0 and total_shares and int(total_shares) > 0
-            else None
-        )
+        lpa = float(profit) / int(total_shares) if profit is not None and float(profit) > 0 and total_shares and int(total_shares) > 0 else None
         payout = dpa / lpa if dpa is not None and lpa and lpa > 0 else None
         dy = dpa / float(price) if dpa is not None and price and float(price) > 0 else None
-
         if not import_ok:
             payout_note = "Consulta de proventos B3 indisponível para o emissor."
         elif not total_shares:
@@ -467,11 +384,8 @@ def calculate_metrics(conn: sqlite3.Connection) -> dict[str, int]:
             payout_note = "Lucro líquido LTM não é positivo; payout não calculável."
         else:
             payout_note = "Dados conciliados com a janela de 12 meses da cotação."
-
         quality_status = recalc_quality(conn, cnpj, payout, payout_note) if cnpj else "PENDENTE FUNDAMENTOS"
-
-        bazin_ceiling = None
-        bazin_margin = None
+        bazin_ceiling = bazin_margin = None
         bazin_status = "PENDENTE"
         if row["eligible"] != "SIM":
             valuation_status = "BLOQUEADO — fora do filtro inicial de liquidez"
@@ -500,7 +414,6 @@ def calculate_metrics(conn: sqlite3.Connection) -> dict[str, int]:
             counters["bazin_enabled"] += 1
             if bazin_margin >= 0.10:
                 counters["bazin_attractive"] += 1
-
         conn.execute(
             """
             INSERT INTO dividend_metrics(
@@ -508,30 +421,11 @@ def calculate_metrics(conn: sqlite3.Connection) -> dict[str, int]:
               bazin_ceiling,bazin_margin,bazin_status,valuation_status,events_count,source_url,updated_at
             ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
-            (
-                ticker,
-                root,
-                cnpj,
-                quote_day.isoformat(),
-                window_start.isoformat(),
-                dpa,
-                dy,
-                total_shares,
-                lpa,
-                payout,
-                bazin_ceiling,
-                bazin_margin,
-                bazin_status,
-                valuation_status,
-                event_count,
-                B3_PUBLIC_SOURCE,
-                now,
-            ),
+            (ticker, root, cnpj, quote_day.isoformat(), window_start.isoformat(), dpa, dy, total_shares, lpa, payout, bazin_ceiling, bazin_margin, bazin_status, valuation_status, event_count, B3_PUBLIC_SOURCE, now),
         )
         counters["processed"] += 1
         if dpa is not None:
             counters["with_dpa"] += 1
-
     conn.commit()
     return counters
 
@@ -547,80 +441,50 @@ def event_payload(conn: sqlite3.Connection, ticker: str, start: str, end: str) -
         """,
         (ticker, start, end),
     )
-    return [
-        {
-            "tipo": row["label"],
-            "dataCom": row["last_date_prior"],
-            "pagamento": row["payment_date"],
-            "valor": fmt_money(row["rate"], 6),
-            "valorRaw": row["rate"],
-            "periodo": row["related_to"],
-            "observacoes": row["remarks"],
-        }
-        for row in rows
-    ]
+    return [{
+        "tipo": row["label"],
+        "dataCom": row["last_date_prior"],
+        "pagamento": row["payment_date"],
+        "valor": fmt_money(row["rate"], 6),
+        "valorRaw": row["rate"],
+        "periodo": row["related_to"],
+        "observacoes": row["remarks"],
+    } for row in rows]
 
 
 def enrich_site(conn: sqlite3.Connection, summary: dict[str, int], import_summary: dict[str, int]) -> dict:
     payload = app.build_site(conn)
-    metrics = {
-        row["ticker"]: row
-        for row in conn.execute("SELECT * FROM dividend_metrics")
-    }
+    metrics = {row["ticker"]: row for row in conn.execute("SELECT * FROM dividend_metrics")}
     for item in payload.get("items", []):
         metric = metrics.get(item["ticker"])
         if not metric:
             continue
-        item.update(
-            {
-                "dpa12m": fmt_money(metric["dpa_12m"], 4) if metric["dpa_12m"] is not None else "Pendente",
-                "dpa12mRaw": metric["dpa_12m"],
-                "dy12m": fmt_pct(metric["dividend_yield"]),
-                "dy12mRaw": metric["dividend_yield"],
-                "acoesTotais": metric["total_shares"],
-                "lpa": fmt_money(metric["lpa"], 4) if metric["lpa"] is not None else "Pendente",
-                "lpaRaw": metric["lpa"],
-                "payout": fmt_pct(metric["payout"]) if metric["payout"] is not None else "Pendente",
-                "payoutRaw": metric["payout"],
-                "precoTetoBazin": fmt_money(metric["bazin_ceiling"]) if metric["bazin_ceiling"] is not None else "Bloqueado",
-                "precoTetoBazinRaw": metric["bazin_ceiling"],
-                "margemBazin": fmt_pct(metric["bazin_margin"], True) if metric["bazin_margin"] is not None else "—",
-                "margemBazinRaw": metric["bazin_margin"],
-                "statusBazin": metric["bazin_status"],
-                "valuationStatus": metric["valuation_status"],
-                "janelaProventosInicio": metric["window_start"],
-                "janelaProventosFim": metric["quote_date"],
-                "quantidadeEventos12m": metric["events_count"],
-                "fonteProventos": metric["source_url"],
-                "eventosProventos": event_payload(
-                    conn,
-                    item["ticker"],
-                    metric["window_start"],
-                    metric["quote_date"],
-                ),
-            }
-        )
-
-    payload["qualityApproved"] = sum(
-        item.get("filtroQualidadeOriginal") == "APROVADA NO FILTRO"
-        and item.get("elegivelInicial") == "SIM"
-        for item in payload.get("items", [])
-    )
-    payload["qualityPartialApproved"] = sum(
-        str(item.get("filtroQualidadeOriginal", "")).startswith("APROVADA PARCIAL")
-        and item.get("elegivelInicial") == "SIM"
-        for item in payload.get("items", [])
-    )
-    payload["redAlerts"] = sum(
-        item.get("filtroQualidadeOriginal") == "ALERTA VERMELHO"
-        and item.get("elegivelInicial") == "SIM"
-        for item in payload.get("items", [])
-    )
-    payload["pendingFundamentals"] = sum(
-        str(item.get("filtroQualidadeOriginal", "")).startswith("PENDENTE")
-        and item.get("elegivelInicial") == "SIM"
-        for item in payload.get("items", [])
-    )
+        item.update({
+            "dpa12m": fmt_money(metric["dpa_12m"], 4) if metric["dpa_12m"] is not None else "Pendente",
+            "dpa12mRaw": metric["dpa_12m"],
+            "dy12m": fmt_pct(metric["dividend_yield"]),
+            "dy12mRaw": metric["dividend_yield"],
+            "acoesTotais": metric["total_shares"],
+            "lpa": fmt_money(metric["lpa"], 4) if metric["lpa"] is not None else "Pendente",
+            "lpaRaw": metric["lpa"],
+            "payout": fmt_pct(metric["payout"]) if metric["payout"] is not None else "Pendente",
+            "payoutRaw": metric["payout"],
+            "precoTetoBazin": fmt_money(metric["bazin_ceiling"]) if metric["bazin_ceiling"] is not None else "Bloqueado",
+            "precoTetoBazinRaw": metric["bazin_ceiling"],
+            "margemBazin": fmt_pct(metric["bazin_margin"], True) if metric["bazin_margin"] is not None else "—",
+            "margemBazinRaw": metric["bazin_margin"],
+            "statusBazin": metric["bazin_status"],
+            "valuationStatus": metric["valuation_status"],
+            "janelaProventosInicio": metric["window_start"],
+            "janelaProventosFim": metric["quote_date"],
+            "quantidadeEventos12m": metric["events_count"],
+            "fonteProventos": metric["source_url"],
+            "eventosProventos": event_payload(conn, item["ticker"], metric["window_start"], metric["quote_date"]),
+        })
+    payload["qualityApproved"] = sum(item.get("filtroQualidadeOriginal") == "APROVADA NO FILTRO" and item.get("elegivelInicial") == "SIM" for item in payload.get("items", []))
+    payload["qualityPartialApproved"] = sum(str(item.get("filtroQualidadeOriginal", "")).startswith("APROVADA PARCIAL") and item.get("elegivelInicial") == "SIM" for item in payload.get("items", []))
+    payload["redAlerts"] = sum(item.get("filtroQualidadeOriginal") == "ALERTA VERMELHO" and item.get("elegivelInicial") == "SIM" for item in payload.get("items", []))
+    payload["pendingFundamentals"] = sum(str(item.get("filtroQualidadeOriginal", "")).startswith("PENDENTE") and item.get("elegivelInicial") == "SIM" for item in payload.get("items", []))
     payload["bazinEnabled"] = summary["bazin_enabled"]
     payload["bazinAttractive"] = summary["bazin_attractive"]
     payload["dividendImportsOk"] = import_summary["ok"] + import_summary["cache"]
@@ -641,9 +505,7 @@ def enrich_site(conn: sqlite3.Connection, summary: dict[str, int], import_summar
         "Análise educacional baseada em dados públicos B3/CVM. Não constitui recomendação de compra ou venda. "
         "A classificação do Bazin é mecânica e depende da integridade dos proventos e do fechamento indicado."
     )
-    (app.DOCS_DIR / "data.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    (app.DOCS_DIR / "data.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     status_path = app.DOCS_DIR / "status.json"
     status = {}
     if status_path.exists():
@@ -651,17 +513,15 @@ def enrich_site(conn: sqlite3.Connection, summary: dict[str, int], import_summar
             status = json.loads(status_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             status = {}
-    status.update(
-        {
-            "status": "OK" if import_summary["error"] == 0 else "PARCIAL",
-            "dividendsUpdatedAt": payload["dividendsUpdatedAt"],
-            "dividendsReferenceDate": payload["dividendsReferenceDate"],
-            "dividendImportsOk": payload["dividendImportsOk"],
-            "dividendImportsError": payload["dividendImportsError"],
-            "bazinEnabled": payload["bazinEnabled"],
-            "bazinAttractive": payload["bazinAttractive"],
-        }
-    )
+    status.update({
+        "status": "OK" if import_summary["error"] == 0 else "PARCIAL",
+        "dividendsUpdatedAt": payload["dividendsUpdatedAt"],
+        "dividendsReferenceDate": payload["dividendsReferenceDate"],
+        "dividendImportsOk": payload["dividendImportsOk"],
+        "dividendImportsError": payload["dividendImportsError"],
+        "bazinEnabled": payload["bazinEnabled"],
+        "bazinAttractive": payload["bazinAttractive"],
+    })
     status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
     return payload
 
@@ -670,42 +530,24 @@ def run() -> int:
     conn = app.connect()
     ensure_schema(conn)
     try:
-        roots = [
-            row[0]
-            for row in conn.execute(
-                "SELECT DISTINCT root FROM universe WHERE principal='SIM' AND root<>'' ORDER BY root"
-            )
-        ]
+        roots = [row[0] for row in conn.execute("SELECT DISTINCT root FROM universe WHERE principal='SIM' AND root<>'' ORDER BY root")]
         import_summary = {"ok": 0, "cache": 0, "error": 0, "events": 0}
+        status_bucket = {"OK": "ok", "CACHE": "cache", "ERRO": "error"}
         for index, root in enumerate(roots, 1):
             status, count = import_root(conn, root)
-            import_summary[status.lower()] += 1
+            bucket = status_bucket.get(status, "error")
+            import_summary[bucket] += 1
             import_summary["events"] += count
+            if status == "ERRO":
+                detail = conn.execute("SELECT message FROM dividend_imports WHERE root=?", (root,)).fetchone()
+                print(f"Aviso proventos {root}: {detail['message'] if detail else 'erro sem detalhe'}")
             if index % 25 == 0:
                 print(f"Proventos B3: {index}/{len(roots)} emissores")
-
         metric_summary = calculate_metrics(conn)
-        app.log(
-            conn,
-            "OK" if import_summary["error"] == 0 else "PARCIAL",
-            (
-                f"Proventos: {import_summary['ok']} novos, {import_summary['cache']} em cache, "
-                f"{import_summary['error']} erros; Bazin liberado para {metric_summary['bazin_enabled']} ações."
-            ),
-        )
+        run_status = "OK" if import_summary["error"] == 0 else "PARCIAL"
+        app.log(conn, run_status, f"Proventos: {import_summary['ok']} novos, {import_summary['cache']} em cache, {import_summary['error']} erros; Bazin liberado para {metric_summary['bazin_enabled']} ações.")
         payload = enrich_site(conn, metric_summary, import_summary)
-        print(
-            json.dumps(
-                {
-                    "status": "OK" if import_summary["error"] == 0 else "PARCIAL",
-                    "emissores": len(roots),
-                    **import_summary,
-                    **metric_summary,
-                    "data_base": payload.get("latestQuoteDate"),
-                },
-                ensure_ascii=False,
-            )
-        )
+        print(json.dumps({"status": run_status, "emissores": len(roots), **import_summary, **metric_summary, "data_base": payload.get("latestQuoteDate")}, ensure_ascii=False))
         return 0
     except Exception as exc:
         app.log(conn, "ERRO", f"Proventos/Bazin: {exc!r}")
