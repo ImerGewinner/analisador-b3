@@ -1,10 +1,16 @@
 {
-  "status": "OK",
-  "updatedAt": "2026-07-12T22:46:30.965807+00:00",
+  "status": "PARCIAL",
+  "updatedAt": "2026-07-12T23:31:37.314254+00:00",
   "quoteDate": "2026-07-10",
   "fundamentalsDate": "",
   "companies": 282,
   "initialEligible": 181,
   "qualityPartialApproved": 0,
-  "redAlerts": 0
+  "redAlerts": 0,
+  "dividendsUpdatedAt": "2026-07-12T23:32:55.045392+00:00",
+  "dividendsReferenceDate": "2026-07-10",
+  "dividendImportsOk": 0,
+  "dividendImportsError": 282,
+  "bazinEnabled": 0,
+  "bazinAttractive": 0
 }
