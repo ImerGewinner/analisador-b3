@@ -3,43 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Analisador B3</title>
+  <title>Analisador B3 — Qualidade e Liquidez</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="wrap">
-    <header>
+    <header class="hero">
       <div>
+        <span class="eyebrow">Dados públicos B3 + CVM</span>
         <h1>Analisador B3</h1>
-        <p>Qualidade, liquidez e acompanhamento de mercado com dados públicos da B3.</p>
+        <p>Filtro inicial de liquidez e Checklist Anti-Lixo com DFP/ITR. Valuation permanece bloqueado enquanto payout e proventos não estiverem conciliados.</p>
       </div>
       <div id="updated" class="muted">Carregando...</div>
     </header>
 
+    <section class="notice">
+      <strong>Como ler:</strong>
+      <span><b>Elegível inicial</b> significa que o papel tem liquidez e negociação suficientes para continuar a análise.</span>
+      <span><b>Filtro de qualidade</b> usa fundamentos CVM, mas aprovações ainda são parciais porque payout e métricas regulatórias financeiras estão pendentes.</span>
+    </section>
+
     <section class="cards">
-      <article class="card"><span>Empresas</span><strong id="count">-</strong></article>
-      <article class="card"><span>Elegíveis</span><strong id="eligible">-</strong></article>
-      <article class="card"><span>Data-base</span><strong id="quoteDate">-</strong></article>
+      <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article>
+      <article class="card"><span>Elegíveis iniciais</span><strong id="initialEligible">-</strong></article>
+      <article class="card"><span>Aprovadas parciais</span><strong id="qualityApproved">-</strong></article>
+      <article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article>
+      <article class="card"><span>Pendentes</span><strong id="pending">-</strong></article>
+      <article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
+    </section>
+
+    <section class="methodology">
+      <details>
+        <summary>Metodologia e limitações</summary>
+        <div class="method-grid">
+          <div><b>Filtro inicial</b><p id="methodInitial"></p></div>
+          <div><b>Qualidade</b><p id="methodQuality"></p></div>
+          <div><b>Financeiras</b><p id="methodFinancial"></p></div>
+          <div><b>Valuation</b><p id="methodValuation"></p></div>
+        </div>
+      </details>
     </section>
 
     <section class="toolbar">
       <input id="q" type="search" placeholder="Buscar ticker ou empresa">
       <select id="filter">
+        <option value="INITIAL">Elegíveis iniciais</option>
         <option value="">Todos</option>
-        <option value="SIM">Elegíveis</option>
-        <option value="NÃO">Não elegíveis</option>
+        <option value="APPROVED">Aprovadas parciais</option>
+        <option value="RED">Alerta vermelho</option>
+        <option value="PENDING">Pendentes</option>
+        <option value="OUT">Fora do universo inicial</option>
+      </select>
+      <select id="sort">
+        <option value="liquidity">Ordenar por liquidez</option>
+        <option value="quality">Ordenar por score qualidade</option>
+        <option value="roe">Ordenar por ROE 5A</option>
+        <option value="ticker">Ordenar por ticker</option>
       </select>
     </section>
 
     <section class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Ticker</th><th>Empresa</th><th>Segmento</th><th>Preço</th>
-            <th>Variação</th><th>Volume médio 20d</th><th>Pregões 20d</th>
-            <th>Elegível</th><th>Motivo</th><th>Fonte</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>Ticker</th><th>Empresa</th><th>Preço</th><th>Elegível inicial</th>
+          <th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th>
+          <th>DL/EBITDA</th><th>Margem líquida</th><th>Lucros + 5A</th><th>Referência</th>
+        </tr></thead>
         <tbody id="body"></tbody>
       </table>
     </section>
