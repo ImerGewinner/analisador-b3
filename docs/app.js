@@ -24,7 +24,7 @@ function badgeClass(status) {
   ) return "danger";
   if (
     text === "FORA DO UNIVERSO INICIAL" || text === "NÃO" ||
-    text.startsWith("BLOQUEADO")
+    text.startsWith("BLOQUEADO") || text.startsWith("NÃO APLICÁVEL")
   ) return "no";
   return "pending";
 }
@@ -32,6 +32,7 @@ function badgeClass(status) {
 function bazinDisplayStatus(item) {
   const valuation = String(item.valuationStatus || "");
   if (valuation.startsWith("BLOQUEADO")) return "BLOQUEADO";
+  if (valuation.startsWith("NÃO APLICÁVEL")) return "NÃO APLICÁVEL";
   return item.statusBazin || "PENDENTE";
 }
 
@@ -146,13 +147,15 @@ function filteredRows() {
 
     const valuation = String(item.valuationStatus || "");
     const bazinStatus = String(item.statusBazin || "");
+    const calculated = valuation.startsWith("LIBERADO") || valuation.startsWith("CALCULADO COM RESSALVA");
     let matchesBazin = true;
-    if (bazinFilter === "RELEASED") matchesBazin = valuation.startsWith("LIBERADO");
+    if (bazinFilter === "RELEASED") matchesBazin = calculated;
     if (bazinFilter === "ATTRACTIVE") matchesBazin = bazinStatus.startsWith("ATRATIVA");
     if (bazinFilter === "NEUTRAL") matchesBazin = bazinStatus.startsWith("NEUTRA");
     if (bazinFilter === "EXPENSIVE") matchesBazin = bazinStatus.startsWith("CARA");
     if (bazinFilter === "BLOCKED") matchesBazin = valuation.startsWith("BLOQUEADO");
-    if (bazinFilter === "PENDING") matchesBazin = !valuation.startsWith("BLOQUEADO") && !valuation.startsWith("LIBERADO");
+    if (bazinFilter === "NOT_APPLICABLE") matchesBazin = valuation.startsWith("NÃO APLICÁVEL");
+    if (bazinFilter === "PENDING") matchesBazin = !calculated && !valuation.startsWith("BLOQUEADO") && !valuation.startsWith("NÃO APLICÁVEL");
 
     return matchesQuery && matchesFilter && matchesBazin;
   });
@@ -173,7 +176,7 @@ function render() {
   const rows = filteredRows();
   body.innerHTML = rows.map(item => {
     const bazinStatus = bazinDisplayStatus(item);
-    const bazinDetail = bazinStatus === "BLOQUEADO"
+    const bazinDetail = bazinStatus === "BLOQUEADO" || bazinStatus === "NÃO APLICÁVEL"
       ? item.valuationStatus
       : (item.margemBazin || item.valuationStatus || "—");
     return `
