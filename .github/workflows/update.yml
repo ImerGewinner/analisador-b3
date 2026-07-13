@@ -50,6 +50,9 @@ jobs:
       - name: Reconciliar CNPJ e regenerar painel
         run: python fix_cnpj.py
 
+      - name: Importar LPA por classe da DRE CVM
+        run: python eps_loader.py
+
       - name: Atualizar proventos, payout, DY e Bazin
         run: python run_dividends.py
 
