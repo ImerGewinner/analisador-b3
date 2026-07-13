@@ -56,11 +56,14 @@ jobs:
       - name: Atualizar proventos, payout, DY e Bazin
         run: python run_dividends_safe.py
 
+      - name: Diagnosticar amostra de proventos
+        run: python diagnose_dividends.py
+
       - name: Registrar banco e JSON atualizados
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/analisador.db docs/data.json docs/status.json
+          git add data/analisador.db docs/data.json docs/status.json docs/dividends_diagnostics.json
           if git diff --cached --quiet; then
             echo "Sem alterações para registrar."
           else
