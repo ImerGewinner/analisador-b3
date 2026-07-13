@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import requests
 import urllib3
@@ -12,10 +12,14 @@ from urllib3.exceptions import InsecureRequestWarning
 import app
 import dividends
 
-B3_CASH_API = (
+B3_BASE = (
     "https://sistemaswebb3-listados.b3.com.br/"
-    "listedCompaniesProxy/CompanyCall/GetListedCashDividends/"
+    "listedCompaniesProxy/CompanyCall"
 )
+INITIAL_API = f"{B3_BASE}/GetInitialCompanies/"
+SUPPLEMENT_API = f"{B3_BASE}/GetListedSupplementCompany/"
+CASH_API = f"{B3_BASE}/GetListedCashDividends/"
+PAGE_SIZE = 100
 _SESSION = dividends.http_session()
 _ROOT_META: dict[str, dict] = {}
 _ORIGINAL_CALCULATE_METRICS = dividends.calculate_metrics
@@ -23,27 +27,32 @@ _ORIGINAL_IS_DPA_EVENT = dividends.is_dpa_event
 
 
 def encoded_url(base: str, payload: dict) -> str:
-    token = base64.b64encode(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    ).decode("ascii")
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    token = base64.b64encode(raw.encode("utf-8")).decode("ascii")
     return base + token
 
 
-def get_json_compatible(url: str) -> dict:
+def get_json_compatible(url: str) -> object:
     try:
         response = _SESSION.get(url, timeout=90)
     except requests.exceptions.SSLError:
         urllib3.disable_warnings(InsecureRequestWarning)
         response = _SESSION.get(url, timeout=90, verify=False)
+
+    if response.status_code in {403, 429}:
+        # Reaquece a sessão para cookies/limites de proteção do portal B3.
+        try:
+            _SESSION.get(B3_BASE, timeout=20)
+        except Exception:
+            pass
+        response = _SESSION.get(url, timeout=90, verify=False)
+
     response.raise_for_status()
     try:
-        data = response.json()
+        return response.json()
     except ValueError as exc:
-        preview = response.text[:180].replace("\n", " ")
+        preview = response.text[:250].replace("\n", " ")
         raise RuntimeError(f"B3 retornou conteúdo não JSON: {preview}") from exc
-    if not isinstance(data, dict):
-        raise RuntimeError(f"Resposta B3 inválida: {type(data).__name__}")
-    return data
 
 
 def share_type_for_ticker(ticker: str) -> str:
@@ -65,6 +74,7 @@ def resolve_ticker(root: str, type_stock: object) -> str:
     tickers = list(meta.get("tickers") or [])
     principal = str(meta.get("principal") or "")
     wanted = dividends.norm_text(type_stock).split(" ")[0]
+
     for ticker in tickers:
         if share_type_for_ticker(ticker) == wanted:
             return ticker
@@ -75,100 +85,192 @@ def resolve_ticker(root: str, type_stock: object) -> str:
     return principal or (tickers[0] if tickers else f"{root}3")
 
 
-def trading_name_candidates(root: str) -> list[str]:
+def principal_ticker(root: str) -> str:
     meta = _ROOT_META.get(root, {})
-    raw = str(meta.get("trading_name") or "").strip()
-    normalized = dividends.norm_text(raw)
-    candidates = [
-        raw,
-        normalized,
-        re.sub(r"[^A-Z0-9]+", "", normalized),
-        re.sub(r"[^A-Z0-9 ]+", "", normalized).strip(),
-        root,
-    ]
-    result: list[str] = []
-    for candidate in candidates:
-        candidate = str(candidate or "").strip()
-        if candidate and candidate not in result:
-            result.append(candidate)
-    return result
+    return str(meta.get("principal") or root)
 
 
-def cash_fallback(root: str, primary_error: Exception | None = None) -> dict:
-    attempts: list[str] = []
-    last_error: Exception | None = primary_error
+def resolve_company(root: str) -> dict:
+    payload = {
+        "language": "pt-br",
+        "pageNumber": 1,
+        "pageSize": 20,
+        "company": principal_ticker(root),
+    }
+    body = get_json_compatible(encoded_url(INITIAL_API, payload))
+    if not isinstance(body, dict):
+        raise RuntimeError(f"{root}: resposta inválida em GetInitialCompanies")
 
-    for trading_name in trading_name_candidates(root):
-        attempts.append(trading_name)
-        try:
-            url = encoded_url(
-                B3_CASH_API,
-                {
-                    "tradingName": trading_name,
-                    "language": "pt-br",
-                    "pageNumber": 1,
-                    "pageSize": 9999,
-                },
-            )
-            body = get_json_compatible(url)
-            results = body.get("results") or []
-            if not isinstance(results, list):
-                raise RuntimeError(f"{root}: resposta sem lista de proventos")
-            if not results:
-                continue
+    results = body.get("results") or []
+    if not isinstance(results, list) or not results:
+        raise RuntimeError(f"{root}: companhia não localizada na B3")
 
-            events: list[dict] = []
-            for row in results:
-                if not isinstance(row, dict):
-                    continue
-                value = dividends.parse_decimal(row.get("valueCash"))
-                ratio = dividends.parse_decimal(row.get("ratio")) or 1.0
-                quoted = dividends.parse_decimal(row.get("quotedPerShares")) or 1.0
-                if value is None or quoted == 0:
-                    continue
-                rate = value * ratio / quoted
-                events.append(
-                    {
-                        "assetIssued": resolve_ticker(root, row.get("typeStock")),
-                        "paymentDate": "",
-                        "rate": rate,
-                        "relatedTo": "",
-                        "approvedOn": row.get("dateApproval") or "",
-                        "label": row.get("corporateAction") or "Provento em dinheiro",
-                        "lastDatePrior": row.get("lastDatePriorEx") or "",
-                        "remarks": (
-                            "Fonte B3 GetListedCashDividends; "
-                            f"tradingName={trading_name}"
-                        ),
-                    }
-                )
-
-            if events:
-                return {
-                    "info": {},
-                    "cashDividends": events,
-                    "fallback": "GetListedCashDividends",
-                    "tradingNameUsed": trading_name,
-                    "primaryError": repr(primary_error) if primary_error else "",
-                    "dividendDataStatus": "VALIDADO",
-                }
-        except Exception as exc:
-            last_error = exc
-
-    raise RuntimeError(
-        f"{root}: proventos não conciliados; tentativas={attempts}; "
-        f"último erro={last_error!r}"
+    exact = next(
+        (
+            item
+            for item in results
+            if isinstance(item, dict)
+            and str(item.get("issuingCompany") or "").upper() == root.upper()
+        ),
+        None,
     )
+    company = exact or next((item for item in results if isinstance(item, dict)), None)
+    if not company:
+        raise RuntimeError(f"{root}: cadastro B3 sem objeto de companhia")
+    return company
+
+
+def fetch_supplement(root: str) -> dict | None:
+    payload = {"issuingCompany": root.upper(), "language": "pt-br"}
+    body = get_json_compatible(encoded_url(SUPPLEMENT_API, payload))
+
+    if isinstance(body, list):
+        data = next((item for item in body if isinstance(item, dict)), None)
+    elif isinstance(body, dict):
+        data = body
+    else:
+        data = None
+
+    if not data:
+        return None
+
+    events = data.get("cashDividends") or data.get("CashDividends") or []
+    if not isinstance(events, list):
+        events = []
+
+    # Somente aceitamos a fonte suplementar quando ela trouxe eventos.
+    # Lista vazia segue para a consulta histórica, evitando DPA zero falso.
+    if events:
+        info = data.get("info") or data.get("Info") or {}
+        if not isinstance(info, dict):
+            info = {}
+        return {
+            "info": info,
+            "cashDividends": events,
+            "sourceMode": "GetListedSupplementCompany",
+            "dividendDataStatus": "VALIDADO",
+        }
+    return None
+
+
+def historical_page(trading_name: str, page_number: int) -> dict:
+    payload = {
+        "language": "pt-br",
+        "pageNumber": page_number,
+        "pageSize": PAGE_SIZE,
+        "tradingName": trading_name,
+    }
+    body = get_json_compatible(encoded_url(CASH_API, payload))
+    if not isinstance(body, dict):
+        raise RuntimeError("Resposta inválida em GetListedCashDividends")
+    return body
+
+
+def historical_to_event(root: str, row: dict) -> dict | None:
+    value = dividends.parse_decimal(row.get("valueCash"))
+    if value is None or value < 0:
+        return None
+
+    return {
+        "assetIssued": resolve_ticker(root, row.get("typeStock")),
+        "paymentDate": "",
+        "rate": value,
+        "relatedTo": "",
+        "approvedOn": row.get("dateApproval") or "",
+        "label": row.get("corporateAction") or "Provento em dinheiro",
+        "lastDatePrior": row.get("lastDatePriorEx") or "",
+        "remarks": "Fonte B3 GetListedCashDividends",
+    }
+
+
+def fetch_historical(root: str) -> dict:
+    company = resolve_company(root)
+    trading_name = str(company.get("tradingName") or "").replace("/", "").replace(".", "").strip()
+    if not trading_name:
+        raise RuntimeError(f"{root}: tradingName ausente no cadastro B3")
+
+    first = historical_page(trading_name, 1)
+    page_meta = first.get("page") or {}
+    total_pages = int(page_meta.get("totalPages") or 1)
+    total_records = int(page_meta.get("totalRecords") or 0)
+
+    raw_rows: list[dict] = []
+    first_results = first.get("results") or []
+    if isinstance(first_results, list):
+        raw_rows.extend(item for item in first_results if isinstance(item, dict))
+
+    # Para DPA 12M, não é necessário baixar décadas de histórico.
+    # Baixamos páginas até ultrapassar 400 dias ou até o fim da paginação.
+    cutoff = date.today() - timedelta(days=400)
+    max_pages = min(total_pages, 8)
+    for page_number in range(2, max_pages + 1):
+        if raw_rows:
+            dates = [
+                dividends.iso_date(item.get("lastDatePriorEx"))
+                for item in raw_rows[-PAGE_SIZE:]
+            ]
+            valid_dates = [d for d in dates if d]
+            if valid_dates:
+                try:
+                    oldest = min(date.fromisoformat(d) for d in valid_dates)
+                    if oldest < cutoff:
+                        break
+                except ValueError:
+                    pass
+
+        page = historical_page(trading_name, page_number)
+        results = page.get("results") or []
+        if not isinstance(results, list) or not results:
+            break
+        raw_rows.extend(item for item in results if isinstance(item, dict))
+
+    events: list[dict] = []
+    seen: set[tuple] = set()
+    for row in raw_rows:
+        event = historical_to_event(root, row)
+        if not event:
+            continue
+        key = (
+            event["assetIssued"],
+            event["label"],
+            event["approvedOn"],
+            event["lastDatePrior"],
+            round(float(event["rate"]), 12),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        events.append(event)
+
+    # Ausência só é considerada confirmada quando o cadastro foi resolvido e a
+    # API histórica respondeu validamente com zero registros.
+    status = "VALIDADO" if events else "AUSENCIA_CONFIRMADA"
+    return {
+        "info": {},
+        "cashDividends": events,
+        "sourceMode": "GetListedCashDividends",
+        "tradingNameUsed": trading_name,
+        "totalRecords": total_records,
+        "dividendDataStatus": status,
+    }
 
 
 def fetch_supplement_compatible(root: str) -> dict:
-    """Usa o endpoint específico de proventos da B3.
+    supplement_error: Exception | None = None
+    try:
+        supplement = fetch_supplement(root)
+        if supplement:
+            return supplement
+    except Exception as exc:
+        supplement_error = exc
 
-    O endpoint suplementar anterior podia responder HTTP 200 sem retornar eventos,
-    o que transformava ausência de dados em DPA zero. Aqui uma lista vazia é tratada
-    como não conciliada, nunca como zero confirmado.
-    """
-    return cash_fallback(root)
+    try:
+        return fetch_historical(root)
+    except Exception as historical_error:
+        raise RuntimeError(
+            f"{root}: proventos não conciliados; "
+            f"suplementar={supplement_error!r}; histórico={historical_error!r}"
+        ) from historical_error
 
 
 def is_dpa_event_compatible(label: object) -> bool:
