@@ -42,7 +42,7 @@ jobs:
         run: python fix_cnpj.py
 
       - name: Atualizar proventos, payout, DY e Bazin
-        run: python dividends.py
+        run: python run_dividends.py
 
       - name: Registrar banco e JSON atualizados
         run: |
