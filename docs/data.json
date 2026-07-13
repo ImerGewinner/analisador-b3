@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T01:45:41.775317+00:00",
+  "generatedAt": "2026-07-13T01:54:24.985552+00:00",
   "timezone": "America/Manaus",
   "count": 282,
   "initialEligible": 181,
@@ -10,7 +10,7 @@
   "latestQuoteDate": "2026-07-10",
   "latestFundamentalsDate": "2026-03-31",
   "lastRun": {
-    "run_at": "2026-07-13T01:45:41.761646+00:00",
+    "run_at": "2026-07-13T01:54:24.973276+00:00",
     "status": "PARCIAL",
     "message": "Proventos: 281 novos, 0 em cache, 1 erros; Bazin liberado para 0 ações."
   },
@@ -29062,6 +29062,6 @@
   "bazinAttractive": 0,
   "dividendImportsOk": 281,
   "dividendImportsError": 1,
-  "dividendsUpdatedAt": "2026-07-13T01:45:41.787259+00:00",
+  "dividendsUpdatedAt": "2026-07-13T01:54:24.995718+00:00",
   "dividendsReferenceDate": "2026-07-10"
 }

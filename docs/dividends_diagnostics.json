@@ -1,0 +1,746 @@
+{
+  "generatedAt": "2026-07-13T01:54:25.155178+00:00",
+  "summary": {
+    "imports": 282,
+    "ok": 281,
+    "errors": 1,
+    "events": 2420,
+    "eligible_events": 2366
+  },
+  "roots": {
+    "PETR": {
+      "import": {
+        "root": "PETR",
+        "imported_at": "2026-07-13T01:53:53.345665+00:00",
+        "status": "OK",
+        "message": "24 evento(s) retornado(s)",
+        "total_shares": 12953836930,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 24,
+      "eligibleEventCount": 20,
+      "events": [
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-08-20",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-09-21",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-08-20",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-09-21",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.01649003,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.02038398,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.01649003,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.02038398,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.29642144,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.17518233,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-02-20",
+          "rate": 0.47160378,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.29642144,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.17518233,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-02-20",
+          "rate": 0.47160378,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.20092175,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-11-21",
+          "rate": 0.33596205,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNOR9",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.13504029,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.20092175,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-11-21",
+          "rate": 0.33596205,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "BRPETRACNPR6",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.13504029,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    },
+    "ITSA": {
+      "import": {
+        "root": "ITSA",
+        "imported_at": "2026-07-13T01:53:31.573016+00:00",
+        "status": "OK",
+        "message": "18 evento(s) retornado(s)",
+        "total_shares": 11299917853,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 18,
+      "eligibleEventCount": 18,
+      "events": [
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-15",
+          "last_date_prior": "2026-06-18",
+          "payment_date": "2026-08-31",
+          "rate": 0.138,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-15",
+          "last_date_prior": "2026-06-18",
+          "payment_date": "2026-08-31",
+          "rate": 0.138,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-05-29",
+          "payment_date": "2026-07-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-05-29",
+          "payment_date": "2026-07-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-03-16",
+          "last_date_prior": "2026-03-19",
+          "payment_date": "2026-08-31",
+          "rate": 0.116,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-03-16",
+          "last_date_prior": "2026-03-19",
+          "payment_date": "2026-08-31",
+          "rate": 0.116,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-02-27",
+          "payment_date": "2026-04-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-02-27",
+          "payment_date": "2026-04-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2025-12-19",
+          "rate": 0.775364,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2026-03-06",
+          "rate": 0.0182,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2025-12-19",
+          "rate": 0.775364,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2026-03-06",
+          "rate": 0.0182,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-11-28",
+          "payment_date": "2026-01-02",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-11-28",
+          "payment_date": "2026-01-02",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-08-29",
+          "payment_date": "2025-10-01",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-08-29",
+          "payment_date": "2025-10-01",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-08-18",
+          "payment_date": "2025-08-29",
+          "rate": 0.1859,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "BRITSAACNPR7",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-08-18",
+          "payment_date": "2025-08-29",
+          "rate": 0.1859,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    },
+    "ABEV": {
+      "import": {
+        "root": "ABEV",
+        "imported_at": "2026-07-13T01:52:43.141534+00:00",
+        "status": "OK",
+        "message": "4 evento(s) retornado(s)",
+        "total_shares": 16097176960,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 4,
+      "eligibleEventCount": 4,
+      "events": [
+        {
+          "root": "ABEV",
+          "ticker": "BRABEVACNOR1",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-04",
+          "last_date_prior": "2026-06-22",
+          "payment_date": "2026-12-31",
+          "rate": 0.0449,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ABEV",
+          "ticker": "BRABEVACNOR1",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "2025-12-30",
+          "rate": 0.4612,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ABEV",
+          "ticker": "BRABEVACNOR1",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "2026-12-31",
+          "rate": 0.269,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ABEV",
+          "ticker": "BRABEVACNOR1",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-07-30",
+          "last_date_prior": "2025-08-07",
+          "payment_date": "2025-10-06",
+          "rate": 0.1283,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    },
+    "BBSE": {
+      "import": {
+        "root": "BBSE",
+        "imported_at": "2026-07-13T01:52:54.837679+00:00",
+        "status": "OK",
+        "message": "3 evento(s) retornado(s)",
+        "total_shares": 1939345359,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 3,
+      "eligibleEventCount": 2,
+      "events": [
+        {
+          "root": "BBSE",
+          "ticker": "BRBBSEACNOR5",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-17",
+          "last_date_prior": "2026-02-12",
+          "payment_date": "2026-03-02",
+          "rate": 2.54996501627,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "BBSE",
+          "ticker": "BRBBSEACNOR5",
+          "label": "RENDIMENTO",
+          "approved_on": "2025-12-17",
+          "last_date_prior": "2026-02-12",
+          "payment_date": "2026-03-02",
+          "rate": 0.05684162552,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "BBSE",
+          "ticker": "BRBBSEACNOR5",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-06-27",
+          "last_date_prior": "2025-08-14",
+          "payment_date": "2025-08-26",
+          "rate": 1.9420951555,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    },
+    "VALE": {
+      "import": {
+        "root": "VALE",
+        "imported_at": "2026-07-13T01:54:18.660435+00:00",
+        "status": "OK",
+        "message": "4 evento(s) retornado(s)",
+        "total_shares": null,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 4,
+      "eligibleEventCount": 4,
+      "events": [
+        {
+          "root": "VALE",
+          "ticker": "BRVALEACNOR0",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-01-07",
+          "rate": 1.244102486,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "BRVALEACNOR0",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-03-04",
+          "rate": 0.768133538,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "BRVALEACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-03-04",
+          "rate": 1.569535033,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "BRVALEACNOR0",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-07-31",
+          "last_date_prior": "2025-08-12",
+          "payment_date": "2025-09-03",
+          "rate": 1.895387417,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    },
+    "CXSE": {
+      "import": {
+        "root": "CXSE",
+        "imported_at": "2026-07-13T01:53:10.353990+00:00",
+        "status": "OK",
+        "message": "5 evento(s) retornado(s)",
+        "total_shares": 2999992485,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 5,
+      "eligibleEventCount": 4,
+      "events": [
+        {
+          "root": "CXSE",
+          "ticker": "BRCXSEACNOR7",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-01-30",
+          "last_date_prior": "2026-04-30",
+          "payment_date": "2026-05-15",
+          "rate": 0.33,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "BRCXSEACNOR7",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-06",
+          "last_date_prior": "2026-01-02",
+          "payment_date": "2026-01-16",
+          "rate": 0.35,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "BRCXSEACNOR7",
+          "label": "RENDIMENTO",
+          "approved_on": "2025-11-06",
+          "last_date_prior": "2026-01-02",
+          "payment_date": "2026-01-16",
+          "rate": 0.002128404,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "BRCXSEACNOR7",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-11-03",
+          "payment_date": "2025-11-17",
+          "rate": 0.32,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "BRCXSEACNOR7",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-05-05",
+          "last_date_prior": "2025-08-01",
+          "payment_date": "2025-08-15",
+          "rate": 0.31,
+          "eligible_dpa": 1,
+          "remarks": ""
+        }
+      ]
+    }
+  }
+}
