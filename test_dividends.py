@@ -1,6 +1,7 @@
 import unittest
 
 import dividends
+import run_dividends
 
 
 class DividendsTests(unittest.TestCase):
@@ -15,8 +16,14 @@ class DividendsTests(unittest.TestCase):
     def test_dividend_and_jcp_are_eligible(self):
         self.assertTrue(dividends.is_dpa_event("DIVIDENDO"))
         self.assertTrue(dividends.is_dpa_event("Juros sobre Capital Próprio"))
+        self.assertTrue(run_dividends.is_dpa_event_compatible("JRS CAP PROPRIO"))
         self.assertFalse(dividends.is_dpa_event("Restituição de capital"))
         self.assertFalse(dividends.is_dpa_event("Bonificação"))
+
+    def test_share_class_mapping(self):
+        self.assertEqual(run_dividends.share_type_for_ticker("VALE3"), "ON")
+        self.assertEqual(run_dividends.share_type_for_ticker("PETR4"), "PN")
+        self.assertEqual(run_dividends.share_type_for_ticker("ALUP11"), "UNT")
 
     def test_bazin_formula(self):
         dpa = 3.10
