@@ -2,6 +2,15 @@ name: Atualizar dados e publicar
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "*.py"
+      - "requirements.txt"
+      - ".github/workflows/update.yml"
+      - "docs/index.html"
+      - "docs/app.js"
+      - "docs/styles.css"
   schedule:
     # 01:37 UTC de terça a sábado = 21:37 de segunda a sexta em Manaus.
     - cron: "37 1 * * 2-6"
