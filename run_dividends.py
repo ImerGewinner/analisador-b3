@@ -75,67 +75,109 @@ def resolve_ticker(root: str, type_stock: object) -> str:
     return principal or (tickers[0] if tickers else f"{root}3")
 
 
-def cash_fallback(root: str, primary_error: Exception) -> dict:
+def trading_name_candidates(root: str) -> list[str]:
     meta = _ROOT_META.get(root, {})
-    trading_name = re.sub(r"[^A-Z0-9 ]+", "", dividends.norm_text(meta.get("trading_name")))
-    if not trading_name:
-        raise RuntimeError(f"{root}: sem nome de negociação para fonte alternativa") from primary_error
+    raw = str(meta.get("trading_name") or "").strip()
+    normalized = dividends.norm_text(raw)
+    candidates = [
+        raw,
+        normalized,
+        re.sub(r"[^A-Z0-9]+", "", normalized),
+        re.sub(r"[^A-Z0-9 ]+", "", normalized).strip(),
+        root,
+    ]
+    result: list[str] = []
+    for candidate in candidates:
+        candidate = str(candidate or "").strip()
+        if candidate and candidate not in result:
+            result.append(candidate)
+    return result
 
-    url = encoded_url(
-        B3_CASH_API,
-        {
-            "tradingName": trading_name,
-            "language": "pt-br",
-            "pageNumber": 1,
-            "pageSize": 9999,
-        },
+
+def cash_fallback(root: str, primary_error: Exception | None = None) -> dict:
+    attempts: list[str] = []
+    last_error: Exception | None = primary_error
+
+    for trading_name in trading_name_candidates(root):
+        attempts.append(trading_name)
+        try:
+            url = encoded_url(
+                B3_CASH_API,
+                {
+                    "tradingName": trading_name,
+                    "language": "pt-br",
+                    "pageNumber": 1,
+                    "pageSize": 9999,
+                },
+            )
+            body = get_json_compatible(url)
+            results = body.get("results") or []
+            if not isinstance(results, list):
+                raise RuntimeError(f"{root}: resposta sem lista de proventos")
+            if not results:
+                continue
+
+            events: list[dict] = []
+            for row in results:
+                if not isinstance(row, dict):
+                    continue
+                value = dividends.parse_decimal(row.get("valueCash"))
+                ratio = dividends.parse_decimal(row.get("ratio")) or 1.0
+                quoted = dividends.parse_decimal(row.get("quotedPerShares")) or 1.0
+                if value is None or quoted == 0:
+                    continue
+                rate = value * ratio / quoted
+                events.append(
+                    {
+                        "assetIssued": resolve_ticker(root, row.get("typeStock")),
+                        "paymentDate": "",
+                        "rate": rate,
+                        "relatedTo": "",
+                        "approvedOn": row.get("dateApproval") or "",
+                        "label": row.get("corporateAction") or "Provento em dinheiro",
+                        "lastDatePrior": row.get("lastDatePriorEx") or "",
+                        "remarks": (
+                            "Fonte B3 GetListedCashDividends; "
+                            f"tradingName={trading_name}"
+                        ),
+                    }
+                )
+
+            if events:
+                return {
+                    "info": {},
+                    "cashDividends": events,
+                    "fallback": "GetListedCashDividends",
+                    "tradingNameUsed": trading_name,
+                    "primaryError": repr(primary_error) if primary_error else "",
+                    "dividendDataStatus": "VALIDADO",
+                }
+        except Exception as exc:
+            last_error = exc
+
+    raise RuntimeError(
+        f"{root}: proventos não conciliados; tentativas={attempts}; "
+        f"último erro={last_error!r}"
     )
-    body = get_json_compatible(url)
-    results = body.get("results") or []
-    if not isinstance(results, list):
-        raise RuntimeError(f"{root}: resposta sem lista de proventos") from primary_error
-
-    events: list[dict] = []
-    for row in results:
-        if not isinstance(row, dict):
-            continue
-        value = dividends.parse_decimal(row.get("valueCash"))
-        ratio = dividends.parse_decimal(row.get("ratio")) or 1.0
-        quoted = dividends.parse_decimal(row.get("quotedPerShares")) or 1.0
-        if value is None or quoted == 0:
-            continue
-        rate = value * ratio / quoted
-        events.append(
-            {
-                "assetIssued": resolve_ticker(root, row.get("typeStock")),
-                "paymentDate": "",
-                "rate": rate,
-                "relatedTo": "",
-                "approvedOn": row.get("dateApproval") or "",
-                "label": row.get("corporateAction") or "Provento em dinheiro",
-                "lastDatePrior": row.get("lastDatePriorEx") or "",
-                "remarks": "Fonte alternativa B3 GetListedCashDividends",
-            }
-        )
-
-    return {
-        "info": {},
-        "cashDividends": events,
-        "fallback": "GetListedCashDividends",
-        "primaryError": repr(primary_error),
-    }
 
 
 def fetch_supplement_compatible(root: str) -> dict:
-    try:
-        return get_json_compatible(dividends.payload_url(root))
-    except Exception as exc:
-        return cash_fallback(root, exc)
+    """Usa o endpoint específico de proventos da B3.
+
+    O endpoint suplementar anterior podia responder HTTP 200 sem retornar eventos,
+    o que transformava ausência de dados em DPA zero. Aqui uma lista vazia é tratada
+    como não conciliada, nunca como zero confirmado.
+    """
+    return cash_fallback(root)
 
 
 def is_dpa_event_compatible(label: object) -> bool:
     text = dividends.norm_text(label)
-    return _ORIGINAL_IS_DPA_EVENT(label) or "JRS CAP PROPRIO" in text or text.startswith("JRS")
+    return (
+        _ORIGINAL_IS_DPA_EVENT(label)
+        or "JRS CAP PROPRIO" in text
+        or text.startswith("JRS")
+    )
 
 
 def hydrate_share_counts_from_eps(conn) -> None:
