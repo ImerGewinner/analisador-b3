@@ -29,6 +29,12 @@ function badgeClass(status) {
   return "pending";
 }
 
+function bazinDisplayStatus(item) {
+  const valuation = String(item.valuationStatus || "");
+  if (valuation.startsWith("BLOQUEADO")) return "BLOQUEADO";
+  return item.statusBazin || "PENDENTE";
+}
+
 function criteriaHtml(criteria) {
   if (!criteria?.length) return '<p class="muted">Critérios ainda não disponíveis.</p>';
   return `<div class="criteria">${criteria.map(c => `
@@ -90,10 +96,10 @@ function detailsRow(item) {
       <div class="fund-grid bazin-grid">
         <div><span>DPA 12M</span><strong>${esc(item.dpa12m || "Pendente")}</strong><small>${esc(item.quantidadeEventos12m ?? 0)} evento(s)</small></div>
         <div><span>Dividend yield 12M</span><strong>${esc(item.dy12m || "—")}</strong><small>sobre o fechamento indicado</small></div>
-        <div><span>LPA estimado</span><strong>${esc(item.lpa || "Pendente")}</strong><small>lucro LTM ÷ ações totais</small></div>
+        <div><span>LPA estimado</span><strong>${esc(item.lpa || "Pendente")}</strong><small>DRE CVM por classe; fallback lucro LTM ÷ ações</small></div>
         <div><span>Payout estimado</span><strong>${esc(item.payout || "Pendente")}</strong><small>limite do filtro: &lt; 90,00%</small></div>
         <div><span>Preço-teto Bazin</span><strong>${esc(item.precoTetoBazin || "Bloqueado")}</strong><small>DPA 12M ÷ 7,75%</small></div>
-        <div><span>Margem Bazin</span><strong>${esc(item.margemBazin || "—")}</strong><small>${esc(item.statusBazin || "PENDENTE")}</small></div>
+        <div><span>Margem Bazin</span><strong>${esc(item.margemBazin || "—")}</strong><small>${esc(bazinDisplayStatus(item))}</small></div>
       </div>
       <div class="window-note">
         <b>Janela dos proventos:</b> ${esc(item.janelaProventosInicio || "—")} a ${esc(item.janelaProventosFim || "—")}.
@@ -124,21 +130,31 @@ function detailsRow(item) {
 function filteredRows() {
   const query = document.getElementById("q")?.value.trim().toUpperCase() || "";
   const filter = document.getElementById("filter")?.value || "";
+  const bazinFilter = document.getElementById("bazinFilter")?.value || "";
   const sort = document.getElementById("sort")?.value || "liquidity";
   let rows = DATA.filter(item => {
     const matchesQuery = !query || `${item.ticker} ${item.empresa}`.toUpperCase().includes(query);
     let matchesFilter = true;
     if (filter === "INITIAL") matchesFilter = item.elegivelInicial === "SIM";
     if (filter === "QUALITY") matchesFilter = item.elegivelInicial === "SIM" && item.filtroQualidadeOriginal === "APROVADA NO FILTRO";
-    if (filter === "BAZIN") matchesFilter = String(item.valuationStatus || "").startsWith("LIBERADO");
-    if (filter === "ATTRACTIVE") matchesFilter = String(item.statusBazin || "").startsWith("ATRATIVA");
     if (filter === "RED") matchesFilter = item.elegivelInicial === "SIM" && item.filtroQualidadeOriginal === "ALERTA VERMELHO";
     if (filter === "PENDING") matchesFilter = item.elegivelInicial === "SIM" && (
       String(item.filtroQualidadeOriginal || "").startsWith("PENDENTE") ||
       String(item.valuationStatus || "").startsWith("BLOQUEADO")
     );
     if (filter === "OUT") matchesFilter = item.elegivelInicial !== "SIM";
-    return matchesQuery && matchesFilter;
+
+    const valuation = String(item.valuationStatus || "");
+    const bazinStatus = String(item.statusBazin || "");
+    let matchesBazin = true;
+    if (bazinFilter === "RELEASED") matchesBazin = valuation.startsWith("LIBERADO");
+    if (bazinFilter === "ATTRACTIVE") matchesBazin = bazinStatus.startsWith("ATRATIVA");
+    if (bazinFilter === "NEUTRAL") matchesBazin = bazinStatus.startsWith("NEUTRA");
+    if (bazinFilter === "EXPENSIVE") matchesBazin = bazinStatus.startsWith("CARA");
+    if (bazinFilter === "BLOCKED") matchesBazin = valuation.startsWith("BLOQUEADO");
+    if (bazinFilter === "PENDING") matchesBazin = !valuation.startsWith("BLOQUEADO") && !valuation.startsWith("LIBERADO");
+
+    return matchesQuery && matchesFilter && matchesBazin;
   });
   rows = [...rows].sort((a, b) => {
     if (sort === "ticker") return a.ticker.localeCompare(b.ticker);
@@ -155,7 +171,12 @@ function render() {
   const body = document.getElementById("body");
   if (!body) return;
   const rows = filteredRows();
-  body.innerHTML = rows.map(item => `
+  body.innerHTML = rows.map(item => {
+    const bazinStatus = bazinDisplayStatus(item);
+    const bazinDetail = bazinStatus === "BLOQUEADO"
+      ? item.valuationStatus
+      : (item.margemBazin || item.valuationStatus || "—");
+    return `
     <tr class="main-row" data-ticker="${esc(item.ticker)}" tabindex="0">
       <td><strong>${esc(item.ticker)}</strong><small>${esc(item.segmento)}</small></td>
       <td>${esc(item.empresa)}</td>
@@ -167,8 +188,9 @@ function render() {
       <td>${esc(item.dlEbitda)}</td>
       <td>${esc(item.margemLiquida)}<small>${esc(item.tendenciaMargem)}</small></td>
       <td>${esc(item.dy12m || "—")}<small>DPA ${esc(item.dpa12m || "Pendente")}</small></td>
-      <td><span class="pill ${badgeClass(item.statusBazin)}">${esc(item.statusBazin || "PENDENTE")}</span><small>${esc(item.margemBazin || item.valuationStatus || "—")}</small></td>
-    </tr>${detailsRow(item)}`).join("");
+      <td><span class="pill ${badgeClass(bazinStatus)}">${esc(bazinStatus)}</span><small>${esc(bazinDetail)}</small></td>
+    </tr>${detailsRow(item)}`;
+  }).join("");
 
   document.querySelectorAll(".details-row").forEach(row => row.hidden = true);
   document.querySelectorAll(".main-row").forEach(row => {
@@ -229,7 +251,7 @@ async function load() {
   }
 }
 
-["q", "filter", "sort"].forEach(id => {
+["q", "filter", "bazinFilter", "sort"].forEach(id => {
   const element = document.getElementById(id);
   if (element) element.addEventListener(id === "q" ? "input" : "change", render);
 });
