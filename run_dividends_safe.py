@@ -53,10 +53,18 @@ def hydrate_share_counts_from_eps_safe(conn) -> None:
     )
 
 
+def bazin_label(margin: float) -> str:
+    if margin >= 0.10:
+        return "ATRATIVA PELO MÉTODO"
+    if margin >= 0:
+        return "NEUTRA PELO MÉTODO"
+    return "CARA PELO MÉTODO"
+
+
 def calculate_metrics_validated(conn):
     counters = _BASE_CALCULATE_METRICS(conn)
 
-    # DPA zero confirmado não é margem Bazin de -100% e não conta como valuation liberado.
+    # DPA zero confirmado não representa margem de -100%.
     conn.execute(
         """
         UPDATE dividend_metrics
@@ -67,12 +75,46 @@ def calculate_metrics_validated(conn):
          WHERE dpa_12m=0
         """
     )
+
+    # Para bancos, seguradoras e financeiras, o Bazin pode ser calculado porque
+    # depende de DPA e cotação, não de EBITDA. O resultado permanece com ressalva
+    # até Basileia, inadimplência, cobertura e eficiência serem integrados.
+    financial_rows = conn.execute(
+        """
+        SELECT dm.ticker,dm.dpa_12m,u.price
+          FROM dividend_metrics dm
+          JOIN universe u ON u.ticker=dm.ticker
+          JOIN fundamentals f ON f.cnpj=dm.cnpj
+         WHERE f.quality_status='APROVADA PARCIAL — SETOR FINANCEIRO'
+           AND dm.dpa_12m>0
+           AND u.price>0
+        """
+    ).fetchall()
+    financial_calculated = 0
+    for row in financial_rows:
+        ceiling = float(row["dpa_12m"]) / dividends.BAZIN_YIELD
+        margin = ceiling / float(row["price"]) - 1
+        conn.execute(
+            """
+            UPDATE dividend_metrics
+               SET bazin_ceiling=?,
+                   bazin_margin=?,
+                   bazin_status=?,
+                   valuation_status='CALCULADO COM RESSALVA — setor financeiro; métricas regulatórias pendentes'
+             WHERE ticker=?
+            """,
+            (ceiling, margin, bazin_label(margin), row["ticker"]),
+        )
+        financial_calculated += 1
+
     conn.commit()
 
     row = conn.execute(
         """
         SELECT
-          SUM(CASE WHEN valuation_status LIKE 'LIBERADO%' AND dpa_12m>0 THEN 1 ELSE 0 END) AS enabled,
+          SUM(CASE WHEN
+              (valuation_status LIKE 'LIBERADO%' OR valuation_status LIKE 'CALCULADO COM RESSALVA%')
+              AND dpa_12m>0 THEN 1 ELSE 0 END) AS enabled,
           SUM(CASE WHEN bazin_status='ATRATIVA PELO MÉTODO' AND dpa_12m>0 THEN 1 ELSE 0 END) AS attractive,
           SUM(CASE WHEN dpa_12m IS NOT NULL THEN 1 ELSE 0 END) AS with_dpa,
           COUNT(*) AS processed
@@ -91,7 +133,8 @@ def calculate_metrics_validated(conn):
         json.dumps(
             {
                 "validacao_bazin": "OK",
-                "bazin_liberado_somente_com_dpa_positivo": counters["bazin_enabled"],
+                "bazin_calculado_com_dpa_positivo": counters["bazin_enabled"],
+                "financeiras_com_ressalva": financial_calculated,
             },
             ensure_ascii=False,
         )
@@ -100,8 +143,8 @@ def calculate_metrics_validated(conn):
 
 
 if __name__ == "__main__":
-    # O cache anterior marcou HTTP 200 sem eventos como OK. Forçar nova consulta
-    # evita reutilizar os 282 registros vazios e reconcilia os proventos pela fonte correta.
+    # Invalida o cache contaminado pelas consultas antigas que marcavam uma
+    # resposta vazia como sucesso.
     dividends.imported_recently = lambda conn, root: False
     run_dividends.hydrate_share_counts_from_eps = hydrate_share_counts_from_eps_safe
     run_dividends._ORIGINAL_CALCULATE_METRICS = calculate_metrics_validated
