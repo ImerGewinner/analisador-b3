@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+import dividends
 import run_dividends
 
 
@@ -56,7 +57,6 @@ def calculate_metrics_validated(conn):
     counters = _BASE_CALCULATE_METRICS(conn)
 
     # DPA zero confirmado não é margem Bazin de -100% e não conta como valuation liberado.
-    # A leitura correta é "não aplicável: sem proventos nos 12 meses".
     conn.execute(
         """
         UPDATE dividend_metrics
@@ -100,6 +100,9 @@ def calculate_metrics_validated(conn):
 
 
 if __name__ == "__main__":
+    # O cache anterior marcou HTTP 200 sem eventos como OK. Forçar nova consulta
+    # evita reutilizar os 282 registros vazios e reconcilia os proventos pela fonte correta.
+    dividends.imported_recently = lambda conn, root: False
     run_dividends.hydrate_share_counts_from_eps = hydrate_share_counts_from_eps_safe
     run_dividends._ORIGINAL_CALCULATE_METRICS = calculate_metrics_validated
     raise SystemExit(run_dividends.main())
