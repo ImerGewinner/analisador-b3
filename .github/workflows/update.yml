@@ -54,7 +54,7 @@ jobs:
         run: python eps_loader.py
 
       - name: Atualizar proventos, payout, DY e Bazin
-        run: python run_dividends.py
+        run: python run_dividends_safe.py
 
       - name: Registrar banco e JSON atualizados
         run: |
