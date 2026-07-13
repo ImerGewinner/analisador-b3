@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Analisador B3 — Qualidade, Dividendos e Bazin</title>
-  <link rel="stylesheet" href="styles.css?v=20260713-4">
+  <link rel="stylesheet" href="styles.css?v=20260713-5">
 </head>
 <body>
   <main class="wrap">
@@ -23,7 +23,7 @@
     <section class="notice">
       <strong>Como ler:</strong>
       <span><b>Liquidez OK</b> apenas permite que o papel siga para a análise fundamentalista.</span>
-      <span><b>Bazin liberado</b> exige qualidade aprovada, proventos conciliados e ausência de Alerta Vermelho. A leitura é mecânica, não recomendação.</span>
+      <span><b>Bazin calculado</b> exige proventos e cotação conciliados. Financeiras podem aparecer com ressalva setorial; Alertas Vermelhos permanecem bloqueados.</span>
     </section>
 
     <section class="cards">
@@ -31,7 +31,7 @@
       <article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article>
       <article class="card"><span>Aprovadas no filtro</span><strong id="qualityApproved">-</strong></article>
       <article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article>
-      <article class="card"><span>Bazin liberado</span><strong id="bazinEnabled">-</strong></article>
+      <article class="card"><span>Bazin calculado</span><strong id="bazinEnabled">-</strong></article>
       <article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
     </section>
 
@@ -59,12 +59,13 @@
       </select>
       <select id="bazinFilter" aria-label="Filtro Bazin">
         <option value="">Todos os status Bazin</option>
-        <option value="RELEASED">Bazin liberado</option>
+        <option value="RELEASED">Bazin calculado</option>
         <option value="ATTRACTIVE">Bazin: atrativa</option>
         <option value="NEUTRAL">Bazin: neutra</option>
         <option value="EXPENSIVE">Bazin: cara</option>
         <option value="BLOCKED">Bazin: bloqueado</option>
         <option value="PENDING">Bazin: pendente</option>
+        <option value="NOT_APPLICABLE">Bazin: não aplicável</option>
       </select>
       <select id="sort">
         <option value="liquidity">Ordenar por liquidez</option>
@@ -89,6 +90,6 @@
 
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260713-4"></script>
+  <script src="app.js?v=20260713-5"></script>
 </body>
 </html>
