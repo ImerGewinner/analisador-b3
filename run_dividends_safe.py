@@ -53,6 +53,63 @@ def hydrate_share_counts_from_eps_safe(conn) -> None:
     )
 
 
+def event_ticker_for(root: str, raw_asset: str, tickers: list[str], principal: str) -> str:
+    raw = str(raw_asset or "").upper().strip()
+    if raw in tickers:
+        return raw
+    for ticker in tickers:
+        if ticker and ticker in raw:
+            return ticker
+
+    principal_type = run_dividends.share_type_for_ticker(principal)
+    if "NOR" in raw or raw.endswith(" ON"):
+        if principal_type == "ON":
+            return principal
+        return next((t for t in tickers if run_dividends.share_type_for_ticker(t) == "ON"), principal)
+    if "NPR" in raw or raw.endswith(" PN"):
+        if principal_type.startswith("PN"):
+            return principal
+        return next((t for t in tickers if run_dividends.share_type_for_ticker(t).startswith("PN")), principal)
+    if "UNT" in raw or "CDA" in raw:
+        unit = next((t for t in tickers if run_dividends.share_type_for_ticker(t) == "UNT"), "")
+        return unit or principal
+    if len(tickers) == 1:
+        return tickers[0]
+    return principal
+
+
+def normalize_event_tickers(conn) -> int:
+    roots: dict[str, dict] = {}
+    for row in conn.execute(
+        "SELECT root,ticker,principal FROM universe WHERE root<>'' ORDER BY root,ticker"
+    ):
+        meta = roots.setdefault(row["root"], {"tickers": [], "principal": ""})
+        meta["tickers"].append(row["ticker"])
+        if row["principal"] == "SIM":
+            meta["principal"] = row["ticker"]
+
+    changed = 0
+    rows = conn.execute(
+        "SELECT event_id,root,ticker FROM cash_dividends"
+    ).fetchall()
+    for row in rows:
+        meta = roots.get(row["root"])
+        if not meta:
+            continue
+        tickers = meta["tickers"]
+        principal = meta["principal"] or (tickers[0] if tickers else "")
+        mapped = event_ticker_for(row["root"], row["ticker"], tickers, principal)
+        if mapped and mapped != row["ticker"]:
+            conn.execute(
+                "UPDATE cash_dividends SET ticker=? WHERE event_id=?",
+                (mapped, row["event_id"]),
+            )
+            changed += 1
+    conn.commit()
+    print(json.dumps({"eventos_isin_convertidos_para_ticker": changed}, ensure_ascii=False))
+    return changed
+
+
 def bazin_label(margin: float) -> str:
     if margin >= 0.10:
         return "ATRATIVA PELO MÉTODO"
@@ -62,6 +119,7 @@ def bazin_label(margin: float) -> str:
 
 
 def calculate_metrics_validated(conn):
+    normalize_event_tickers(conn)
     counters = _BASE_CALCULATE_METRICS(conn)
 
     # DPA zero confirmado não representa margem de -100%.
