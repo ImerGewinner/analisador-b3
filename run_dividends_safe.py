@@ -5,6 +5,9 @@ import json
 import run_dividends
 
 
+_BASE_CALCULATE_METRICS = run_dividends._ORIGINAL_CALCULATE_METRICS
+
+
 def hydrate_share_counts_from_eps_safe(conn) -> None:
     rows = conn.execute(
         """
@@ -41,9 +44,62 @@ def hydrate_share_counts_from_eps_safe(conn) -> None:
         )
         updated += 1
     conn.commit()
-    print(json.dumps({"lpa_cvm_aplicado": updated, "units_mantidas_pendentes": True}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"lpa_cvm_aplicado": updated, "units_mantidas_pendentes": True},
+            ensure_ascii=False,
+        )
+    )
+
+
+def calculate_metrics_validated(conn):
+    counters = _BASE_CALCULATE_METRICS(conn)
+
+    # DPA zero confirmado não é margem Bazin de -100% e não conta como valuation liberado.
+    # A leitura correta é "não aplicável: sem proventos nos 12 meses".
+    conn.execute(
+        """
+        UPDATE dividend_metrics
+           SET bazin_ceiling=NULL,
+               bazin_margin=NULL,
+               bazin_status='SEM PROVENTOS 12M — NÃO APLICÁVEL',
+               valuation_status='NÃO APLICÁVEL — sem dividendos/JCP validados nos 12M'
+         WHERE dpa_12m=0
+        """
+    )
+    conn.commit()
+
+    row = conn.execute(
+        """
+        SELECT
+          SUM(CASE WHEN valuation_status LIKE 'LIBERADO%' AND dpa_12m>0 THEN 1 ELSE 0 END) AS enabled,
+          SUM(CASE WHEN bazin_status='ATRATIVA PELO MÉTODO' AND dpa_12m>0 THEN 1 ELSE 0 END) AS attractive,
+          SUM(CASE WHEN dpa_12m IS NOT NULL THEN 1 ELSE 0 END) AS with_dpa,
+          COUNT(*) AS processed
+        FROM dividend_metrics
+        """
+    ).fetchone()
+    counters.update(
+        {
+            "processed": int(row["processed"] or 0),
+            "with_dpa": int(row["with_dpa"] or 0),
+            "bazin_enabled": int(row["enabled"] or 0),
+            "bazin_attractive": int(row["attractive"] or 0),
+        }
+    )
+    print(
+        json.dumps(
+            {
+                "validacao_bazin": "OK",
+                "bazin_liberado_somente_com_dpa_positivo": counters["bazin_enabled"],
+            },
+            ensure_ascii=False,
+        )
+    )
+    return counters
 
 
 if __name__ == "__main__":
     run_dividends.hydrate_share_counts_from_eps = hydrate_share_counts_from_eps_safe
+    run_dividends._ORIGINAL_CALCULATE_METRICS = calculate_metrics_validated
     raise SystemExit(run_dividends.main())
