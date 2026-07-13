@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Analisador B3 — Qualidade, Dividendos e Bazin</title>
-  <link rel="stylesheet" href="styles.css?v=20260713-3">
+  <link rel="stylesheet" href="styles.css?v=20260713-4">
 </head>
 <body>
   <main class="wrap">
@@ -49,15 +49,22 @@
 
     <section class="toolbar">
       <input id="q" type="search" placeholder="Buscar ticker ou empresa">
-      <select id="filter">
+      <select id="filter" aria-label="Filtro geral">
         <option value="INITIAL">Liquidez OK</option>
         <option value="">Todos</option>
         <option value="QUALITY">Aprovadas no filtro</option>
-        <option value="BAZIN">Bazin liberado</option>
-        <option value="ATTRACTIVE">Atrativas pelo método</option>
         <option value="RED">Alerta vermelho</option>
         <option value="PENDING">Pendentes</option>
         <option value="OUT">Fora do filtro de liquidez</option>
+      </select>
+      <select id="bazinFilter" aria-label="Filtro Bazin">
+        <option value="">Todos os status Bazin</option>
+        <option value="RELEASED">Bazin liberado</option>
+        <option value="ATTRACTIVE">Bazin: atrativa</option>
+        <option value="NEUTRAL">Bazin: neutra</option>
+        <option value="EXPENSIVE">Bazin: cara</option>
+        <option value="BLOCKED">Bazin: bloqueado</option>
+        <option value="PENDING">Bazin: pendente</option>
       </select>
       <select id="sort">
         <option value="liquidity">Ordenar por liquidez</option>
@@ -82,6 +89,6 @@
 
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260713-3"></script>
+  <script src="app.js?v=20260713-4"></script>
 </body>
 </html>
