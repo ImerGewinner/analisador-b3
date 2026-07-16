@@ -1,16 +1,16 @@
 {
   "status": "PARCIAL",
-  "updatedAt": "2026-07-15T04:34:48.754612+00:00",
-  "quoteDate": "2026-07-14",
+  "updatedAt": "2026-07-16T04:44:25.441137+00:00",
+  "quoteDate": "2026-07-15",
   "fundamentalsDate": "2026-03-31",
-  "companies": 285,
-  "initialEligible": 180,
+  "companies": 289,
+  "initialEligible": 181,
   "qualityPartialApproved": 0,
   "redAlerts": 1,
-  "dividendsUpdatedAt": "2026-07-15T04:36:50.808526+00:00",
-  "dividendsReferenceDate": "2026-07-14",
-  "dividendImportsOk": 284,
+  "dividendsUpdatedAt": "2026-07-16T04:46:09.226232+00:00",
+  "dividendsReferenceDate": "2026-07-15",
+  "dividendImportsOk": 288,
   "dividendImportsError": 1,
   "bazinEnabled": 53,
-  "bazinAttractive": 22
+  "bazinAttractive": 21
 }
