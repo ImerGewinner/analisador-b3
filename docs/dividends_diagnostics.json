@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-17T04:49:23.860322+00:00",
+  "generatedAt": "2026-07-18T04:34:46.143067+00:00",
   "summary": {
-    "imports": 293,
-    "ok": 292,
+    "imports": 295,
+    "ok": 294,
     "errors": 1,
     "events": 2527,
     "eligible_events": 2473
@@ -11,7 +11,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-07-17T04:48:56.620717+00:00",
+        "imported_at": "2026-07-18T04:34:22.917237+00:00",
         "status": "OK",
         "message": "24 evento(s) retornado(s)",
         "total_shares": 12953836930,
@@ -291,7 +291,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-07-17T04:48:35.016958+00:00",
+        "imported_at": "2026-07-18T04:34:04.778283+00:00",
         "status": "OK",
         "message": "18 evento(s) retornado(s)",
         "total_shares": 11299917853,
@@ -505,7 +505,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-07-17T04:47:44.384223+00:00",
+        "imported_at": "2026-07-18T04:33:20.709466+00:00",
         "status": "OK",
         "message": "4 evento(s) retornado(s)",
         "total_shares": 16097176960,
@@ -565,7 +565,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-07-17T04:47:56.896016+00:00",
+        "imported_at": "2026-07-18T04:33:32.916221+00:00",
         "status": "OK",
         "message": "3 evento(s) retornado(s)",
         "total_shares": 1939345359,
@@ -614,7 +614,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-07-17T04:49:18.665983+00:00",
+        "imported_at": "2026-07-18T04:34:41.190083+00:00",
         "status": "OK",
         "message": "4 evento(s) retornado(s)",
         "total_shares": null,
@@ -674,7 +674,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-07-17T04:48:13.831335+00:00",
+        "imported_at": "2026-07-18T04:33:47.258386+00:00",
         "status": "OK",
         "message": "5 evento(s) retornado(s)",
         "total_shares": 2999992485,
