@@ -9,7 +9,13 @@ import app
 
 def complete_history(message: object, status: object) -> bool:
     normalized = advanced.norm_text(message)
-    return str(status or "") == "OK" and "GETLISTEDCASHDIVIDENDS 5Y" in normalized
+    markers = (
+        "GETLISTEDCASHDIVIDENDS-5Y",
+        "GETLISTEDCASHDIVIDENDS 5Y",
+    )
+    return str(status or "") == "OK" and any(
+        marker in normalized for marker in markers
+    )
 
 
 def run() -> int:
