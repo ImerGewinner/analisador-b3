@@ -1,34 +1,189 @@
 {
-  "generatedAt": "2026-07-20T18:40:38.705755+00:00",
+  "generatedAt": "2026-07-20T19:13:41.757503+00:00",
   "summary": {
     "imports": 295,
     "ok": 295,
     "pending": 0,
     "errors": 0,
-    "events": 4262,
-    "eligible_events": 4170
+    "events": 4364,
+    "eligible_events": 4271
   },
   "failures": [],
   "roots": {
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-07-20T18:37:08.809463+00:00",
+        "imported_at": "2026-07-20T19:08:13.477989+00:00",
         "status": "OK",
-        "message": "0 evento(s); status=AUSENCIA_CONFIRMADA; fonte=GetListedCashDividends-5Y",
+        "message": "14 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 16097176960,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 0,
-      "eligibleEventCount": 0,
-      "events": []
+      "eventCount": 14,
+      "eligibleEventCount": 14,
+      "events": [
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-04",
+          "last_date_prior": "2026-06-22",
+          "payment_date": "",
+          "rate": 0.0449,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "",
+          "rate": 0.4612,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "",
+          "rate": 0.269,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-07-30",
+          "last_date_prior": "2025-08-07",
+          "payment_date": "",
+          "rate": 0.1283,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-05-07",
+          "last_date_prior": "2025-05-15",
+          "payment_date": "",
+          "rate": 0.128,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-02-25",
+          "last_date_prior": "2025-03-14",
+          "payment_date": "",
+          "rate": 0.1276,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2024-12-11",
+          "last_date_prior": "2024-12-19",
+          "payment_date": "",
+          "rate": 0.4228,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2024-12-11",
+          "last_date_prior": "2024-12-19",
+          "payment_date": "",
+          "rate": 0.2448,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2023-12-12",
+          "last_date_prior": "2023-12-19",
+          "payment_date": "",
+          "rate": 0.7302,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2022-12-06",
+          "last_date_prior": "2022-12-19",
+          "payment_date": "",
+          "rate": 0.7623,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2021-12-09",
+          "last_date_prior": "2021-12-17",
+          "payment_date": "",
+          "rate": 0.1334,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2021-12-09",
+          "last_date_prior": "2021-12-17",
+          "payment_date": "",
+          "rate": 0.4702,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2020-12-21",
+          "last_date_prior": "2021-01-13",
+          "payment_date": "",
+          "rate": 0.0767,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2020-12-09",
+          "last_date_prior": "2020-12-17",
+          "payment_date": "",
+          "rate": 0.4137,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        }
+      ]
     },
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-07-20T18:37:31.756007+00:00",
+        "imported_at": "2026-07-20T19:08:45.638047+00:00",
         "status": "OK",
         "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 1939345359,
@@ -242,7 +397,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-07-20T18:38:02.875759+00:00",
+        "imported_at": "2026-07-20T19:09:27.960786+00:00",
         "status": "OK",
         "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 2999992485,
@@ -467,7 +622,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-07-20T18:38:40.888556+00:00",
+        "imported_at": "2026-07-20T19:10:17.893187+00:00",
         "status": "OK",
         "message": "62 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 11299917853,
@@ -1165,7 +1320,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-07-20T18:39:15.281893+00:00",
+        "imported_at": "2026-07-20T19:11:03.733893+00:00",
         "status": "OK",
         "message": "66 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 12953836930,
@@ -1907,7 +2062,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-07-20T18:39:57.261757+00:00",
+        "imported_at": "2026-07-20T19:11:55.630727+00:00",
         "status": "OK",
         "message": "23 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": null,
