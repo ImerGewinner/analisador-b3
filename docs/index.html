@@ -7,8 +7,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Analisador B3 — Valdemar</title>
-  <link rel="stylesheet" href="styles.css?v=20260720-2">
-  <link rel="stylesheet" href="advanced.css?v=20260720-2">
+  <link rel="stylesheet" href="styles.css?v=20260720-3">
+  <link rel="stylesheet" href="advanced.css?v=20260720-3">
 </head>
 <body>
   <main class="wrap">
@@ -16,7 +16,7 @@
       <div><span class="eyebrow">Dados públicos B3 + CVM + Banco Central</span><h1>Analisador B3</h1><p>Liquidez, qualidade, consistência, contexto setorial, Bazin e DCF simplificado com fontes e datas auditáveis.</p></div>
       <div class="hero-actions"><div id="updated" class="muted">Carregando...</div><a class="nav-button" href="valdemar.html">Ferramentas Valdemar</a></div>
     </header>
-    <section class="notice"><strong>Como ler:</strong><span><b>Liquidez OK</b> só permite que o papel siga para análise.</span><span><b>Valuation calculado</b> não é recomendação. Alertas Vermelhos continuam bloqueados; financeiras recebem ressalva setorial.</span></section>
+    <section class="notice"><strong>Como ler:</strong><span><b>Liquidez OK</b> só permite que o papel siga para análise.</span><span><b>Valuation calculado</b> não é recomendação. Alertas Vermelhos continuam bloqueados; financeiras recebem métricas regulatórias e ressalvas explícitas.</span></section>
     <section class="cards cards-eight">
       <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article><article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article><article class="card"><span>Aprovadas no filtro</span><strong id="qualityApproved">-</strong></article><article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article><article class="card"><span>Bazin calculado</span><strong id="bazinEnabled">-</strong></article><article class="card"><span>DCF calculado</span><strong id="dcfEnabled">-</strong></article><article class="card"><span>Meta Selic</span><strong id="selic">-</strong></article><article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
     </section>
@@ -31,6 +31,7 @@
     <section class="table-wrap"><table><thead><tr><th>Ticker</th><th>Empresa</th><th>Preço</th><th>Liquidez OK</th><th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th><th>DL/EBITDA</th><th>Margem líquida</th><th>DY 12M</th><th>Bazin</th><th>DCF</th></tr></thead><tbody id="body"></tbody></table></section>
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260720-2"></script>
+  <script src="app.js?v=20260720-3"></script>
+  <script src="regulatory.js?v=20260720-3"></script>
 </body>
 </html>
