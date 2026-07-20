@@ -1,25 +1,37 @@
-# Analisador B3
+# Analisador B3 — Valdemar
 
-Projeto educacional em Python, SQLite, GitHub Actions e GitHub Pages para acompanhar ações brasileiras com dados públicos da B3 e da CVM.
+Projeto educacional em Python, SQLite, GitHub Actions e GitHub Pages para analisar ações brasileiras com dados públicos e auditáveis.
 
-## Fluxo atual
+## Fluxo implementado
 
-1. **Filtro inicial de liquidez:** volume médio de 20 pregões, frequência de negociação e sessões sem negócio.
-2. **Fundamentos CVM:** importação de DFP 2020–2025 e ITR 2025–2026, ajustada automaticamente conforme o ano corrente.
-3. **Checklist Anti-Lixo:** ROE médio 5A, crescimento do lucro, dívida líquida/EBITDA, tendência da margem líquida e consistência do lucro.
-4. **Regra de parada:** duas ou mais reprovações, prejuízo recorrente ou deterioração acelerada da dívida geram **Alerta Vermelho**.
-5. **Valuation bloqueado:** payout e proventos por ação ainda não foram conciliados.
+1. **Mercado B3:** fechamento oficial COTAHIST, volume, frequência de negociação e seleção da classe principal por emissor.
+2. **Fundamentos CVM:** DFP dos últimos exercícios e ITR atual/comparável para receita, lucro, EBITDA, patrimônio, caixa e dívida.
+3. **Checklist Anti-Lixo:** ROE médio 5A, CAGR do lucro, dívida líquida/EBITDA, tendência da margem, lucros positivos e payout.
+4. **Proventos:** dividendos e JCP por classe, DPA 12M, dividend yield, payout e histórico de cinco anos.
+5. **Bazin:** preço-teto `DPA 12M / 7,75%` e margem sobre o fechamento B3 validado.
+6. **DCF simplificado:** FCF médio 3A, crescimento limitado a 6%, WACC de 12% e desconto de segurança de 25%.
+7. **Contexto:** P/L contra mediana do setor, Meta Selic oficial do Banco Central, spread DY–Selic, consistência de dividendos e diluição estimada.
+8. **Ferramentas Valdemar:** comparação, raio-X de carteira, watchlist e projeções, armazenadas localmente no navegador.
 
-Bancos e seguradoras não usam dívida líquida/EBITDA. A classificação permanece parcial até incluir capitalização, inadimplência, cobertura, provisões e eficiência.
+## Regras de segurança
+
+- Nenhum dado ausente é convertido automaticamente em zero.
+- Alertas Vermelhos bloqueiam valuation.
+- DCF não é aplicado a bancos, seguradoras ou financeiras.
+- Bazin de financeiras pode ser exibido com ressalva, pois ainda depende da análise regulatória setorial.
+- Units permanecem pendentes quando a composição por classe não puder ser calculada com segurança.
+- Fechamento B3 não é apresentado como cotação em tempo real.
+- Nenhum conteúdo constitui recomendação de compra ou venda.
 
 ## Fontes
 
-- B3 COTAHIST: fechamento, volume e quantidade de negócios.
-- B3 Companhias Listadas: cadastro e segmento.
-- CVM DFP/ITR: demonstrações financeiras anuais e trimestrais.
+- **B3 COTAHIST:** fechamento, volume e quantidade de negócios.
+- **B3 Companhias Listadas:** cadastro, classes, segmentos e proventos.
+- **CVM DFP/ITR:** demonstrações financeiras, fluxo de caixa e lucro por ação.
+- **Banco Central do Brasil — SGS 432:** Meta Selic definida pelo Copom.
 
 ## Automação
 
-O workflow `.github/workflows/update.yml` roda automaticamente após o fechamento dos pregões e também pode ser acionado manualmente em **Actions → Atualizar dados e publicar → Run workflow**.
+O workflow `.github/workflows/update.yml` roda automaticamente após o fechamento dos pregões e também pode ser acionado em **Actions → Atualizar dados e publicar → Run workflow**.
 
-Nenhum conteúdo constitui recomendação de compra ou venda.
+O workflow testa regras, atualiza mercado e fundamentos, importa LPA, reconcilia proventos, calcula Bazin/DCF, atualiza os diagnósticos e publica o GitHub Pages.
