@@ -56,12 +56,15 @@ jobs:
       - name: Atualizar proventos, payout, DY e Bazin
         run: python run_dividends_full_v2.py
 
-      - name: Calcular Selic, P/L setorial, DCF e consistência
+      - name: Calcular Selic, P/L setorial e DCF
         run: python run_advanced_safe_v2.py
+
+      - name: Corrigir consistência de dividendos e classificações
+        run: python fix_dividend_consistency.py
 
       - name: Integrar métricas regulatórias IFData
         continue-on-error: true
-        run: python run_financial_sector_v2.py
+        run: python financial_sector_v2.py
 
       - name: Diagnosticar proventos e pendências
         run: python diagnose_dividends.py
