@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-20T19:13:41.757503+00:00",
+  "generatedAt": "2026-07-20T19:30:24.102746+00:00",
   "summary": {
     "imports": 295,
     "ok": 295,
@@ -13,7 +13,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-07-20T19:08:13.477989+00:00",
+        "imported_at": "2026-07-20T19:26:19.617210+00:00",
         "status": "OK",
         "message": "14 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 16097176960,
@@ -183,7 +183,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-07-20T19:08:45.638047+00:00",
+        "imported_at": "2026-07-20T19:26:39.172803+00:00",
         "status": "OK",
         "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 1939345359,
@@ -397,7 +397,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-07-20T19:09:27.960786+00:00",
+        "imported_at": "2026-07-20T19:27:07.624917+00:00",
         "status": "OK",
         "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 2999992485,
@@ -622,7 +622,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-07-20T19:10:17.893187+00:00",
+        "imported_at": "2026-07-20T19:27:44.241446+00:00",
         "status": "OK",
         "message": "62 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 11299917853,
@@ -1320,7 +1320,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-07-20T19:11:03.733893+00:00",
+        "imported_at": "2026-07-20T19:28:17.964977+00:00",
         "status": "OK",
         "message": "66 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": 12953836930,
@@ -2062,7 +2062,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-07-20T19:11:55.630727+00:00",
+        "imported_at": "2026-07-20T19:28:57.612117+00:00",
         "status": "OK",
         "message": "23 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
         "total_shares": null,
