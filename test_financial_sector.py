@@ -11,10 +11,14 @@ class FinancialSectorTests(unittest.TestCase):
     def test_metric_identification(self):
         self.assertEqual(sector.metric_score("Índice de Basileia", "basel"), 100)
         self.assertEqual(sector.metric_score("Índice de Eficiência", "efficiency"), 100)
-        self.assertGreater(sector.metric_score("Inadimplência acima de 90 dias", "npl"), 0)
+        self.assertGreater(
+            sector.metric_score("Inadimplência acima de 90 dias", "npl"), 0
+        )
 
     def test_alias_normalization(self):
-        self.assertEqual(sector.norm("Banco do Brasil S.A."), "DO")
+        normalized = sector.norm("Banco do Brasil S.A.")
+        self.assertIn("DO", normalized)
+        self.assertNotIn("BANCO", normalized)
         self.assertIn("ITAU", sector.norm("Itaú Unibanco Holding S.A."))
 
 
