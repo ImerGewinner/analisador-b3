@@ -57,7 +57,7 @@ jobs:
         run: python run_dividends_full.py
 
       - name: Calcular Selic, P/L setorial, DCF e consistência
-        run: python run_advanced_safe.py
+        run: python run_advanced_safe_v2.py
 
       - name: Integrar métricas regulatórias IFData
         continue-on-error: true
