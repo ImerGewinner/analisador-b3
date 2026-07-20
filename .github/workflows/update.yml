@@ -42,7 +42,7 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Testar regras financeiras
-        run: python -m unittest test_dividends.py test_advanced.py
+        run: python -m unittest test_dividends.py test_advanced.py test_financial_sector.py
 
       - name: Atualizar mercado B3 e fundamentos CVM
         run: python run_pipeline.py
@@ -57,7 +57,11 @@ jobs:
         run: python run_dividends_full.py
 
       - name: Calcular Selic, P/L setorial, DCF e consistência
-        run: python advanced_analysis.py
+        run: python run_advanced_safe.py
+
+      - name: Integrar métricas regulatórias IFData
+        continue-on-error: true
+        run: python run_financial_sector_v2.py
 
       - name: Diagnosticar proventos e pendências
         run: python diagnose_dividends.py
