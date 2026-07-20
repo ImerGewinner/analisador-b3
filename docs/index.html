@@ -6,90 +6,31 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Analisador B3 — Qualidade, Dividendos e Bazin</title>
-  <link rel="stylesheet" href="styles.css?v=20260713-5">
+  <title>Analisador B3 — Valdemar</title>
+  <link rel="stylesheet" href="styles.css?v=20260720-2">
+  <link rel="stylesheet" href="advanced.css?v=20260720-2">
 </head>
 <body>
   <main class="wrap">
     <header class="hero">
-      <div>
-        <span class="eyebrow">Dados públicos B3 + CVM</span>
-        <h1>Analisador B3</h1>
-        <p>Etapa 1: liquidez. Etapa 2: qualidade com DFP/ITR. Etapa 3: DPA 12M, payout, dividend yield e Bazin com fechamento oficial B3.</p>
-      </div>
-      <div id="updated" class="muted">Carregando...</div>
+      <div><span class="eyebrow">Dados públicos B3 + CVM + Banco Central</span><h1>Analisador B3</h1><p>Liquidez, qualidade, consistência, contexto setorial, Bazin e DCF simplificado com fontes e datas auditáveis.</p></div>
+      <div class="hero-actions"><div id="updated" class="muted">Carregando...</div><a class="nav-button" href="valdemar.html">Ferramentas Valdemar</a></div>
     </header>
-
-    <section class="notice">
-      <strong>Como ler:</strong>
-      <span><b>Liquidez OK</b> apenas permite que o papel siga para a análise fundamentalista.</span>
-      <span><b>Bazin calculado</b> exige proventos e cotação conciliados. Financeiras podem aparecer com ressalva setorial; Alertas Vermelhos permanecem bloqueados.</span>
+    <section class="notice"><strong>Como ler:</strong><span><b>Liquidez OK</b> só permite que o papel siga para análise.</span><span><b>Valuation calculado</b> não é recomendação. Alertas Vermelhos continuam bloqueados; financeiras recebem ressalva setorial.</span></section>
+    <section class="cards cards-eight">
+      <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article><article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article><article class="card"><span>Aprovadas no filtro</span><strong id="qualityApproved">-</strong></article><article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article><article class="card"><span>Bazin calculado</span><strong id="bazinEnabled">-</strong></article><article class="card"><span>DCF calculado</span><strong id="dcfEnabled">-</strong></article><article class="card"><span>Meta Selic</span><strong id="selic">-</strong></article><article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
     </section>
-
-    <section class="cards">
-      <article class="card"><span>Empresas principais</span><strong id="count">-</strong></article>
-      <article class="card"><span>Liquidez OK</span><strong id="initialEligible">-</strong></article>
-      <article class="card"><span>Aprovadas no filtro</span><strong id="qualityApproved">-</strong></article>
-      <article class="card alert"><span>Alertas vermelhos</span><strong id="redAlerts">-</strong></article>
-      <article class="card"><span>Bazin calculado</span><strong id="bazinEnabled">-</strong></article>
-      <article class="card"><span>Data-base mercado</span><strong id="quoteDate">-</strong></article>
-    </section>
-
-    <section class="methodology">
-      <details>
-        <summary>Metodologia e limitações</summary>
-        <div class="method-grid">
-          <div><b>Etapa 1 — Liquidez</b><p id="methodInitial"></p></div>
-          <div><b>Etapa 2 — Qualidade</b><p id="methodQuality"></p></div>
-          <div><b>Financeiras</b><p id="methodFinancial"></p></div>
-          <div><b>Etapa 3 — Bazin</b><p id="methodValuation"></p></div>
-        </div>
-      </details>
-    </section>
-
-    <section class="toolbar">
+    <section class="methodology"><details><summary>Metodologia e limitações</summary><div class="method-grid method-grid-extended"><div><b>Etapa 1 — Liquidez</b><p id="methodInitial"></p></div><div><b>Etapa 2 — Qualidade</b><p id="methodQuality"></p></div><div><b>Financeiras</b><p id="methodFinancial"></p></div><div><b>Etapa 3 — Bazin</b><p id="methodValuation"></p></div><div><b>Etapa 4 — DCF</b><p id="methodDcf"></p></div><div><b>Macro</b><p id="methodMacro"></p></div><div><b>Consistência</b><p id="methodConsistency"></p></div></div></details></section>
+    <section class="toolbar toolbar-extended">
       <input id="q" type="search" placeholder="Buscar ticker ou empresa">
-      <select id="filter" aria-label="Filtro geral">
-        <option value="INITIAL">Liquidez OK</option>
-        <option value="">Todos</option>
-        <option value="QUALITY">Aprovadas no filtro</option>
-        <option value="RED">Alerta vermelho</option>
-        <option value="PENDING">Pendentes</option>
-        <option value="OUT">Fora do filtro de liquidez</option>
-      </select>
-      <select id="bazinFilter" aria-label="Filtro Bazin">
-        <option value="">Todos os status Bazin</option>
-        <option value="RELEASED">Bazin calculado</option>
-        <option value="ATTRACTIVE">Bazin: atrativa</option>
-        <option value="NEUTRAL">Bazin: neutra</option>
-        <option value="EXPENSIVE">Bazin: cara</option>
-        <option value="BLOCKED">Bazin: bloqueado</option>
-        <option value="PENDING">Bazin: pendente</option>
-        <option value="NOT_APPLICABLE">Bazin: não aplicável</option>
-      </select>
-      <select id="sort">
-        <option value="liquidity">Ordenar por liquidez</option>
-        <option value="quality">Ordenar por score qualidade</option>
-        <option value="roe">Ordenar por ROE 5A</option>
-        <option value="dy">Ordenar por DY 12M</option>
-        <option value="bazin">Ordenar por margem Bazin</option>
-        <option value="ticker">Ordenar por ticker</option>
-      </select>
+      <select id="filter" aria-label="Filtro geral"><option value="INITIAL">Liquidez OK</option><option value="">Todos</option><option value="QUALITY">Aprovadas no filtro</option><option value="RED">Alerta vermelho</option><option value="PENDING">Pendentes</option><option value="OUT">Fora do filtro de liquidez</option></select>
+      <select id="bazinFilter" aria-label="Filtro Bazin"><option value="">Todos os status Bazin</option><option value="RELEASED">Bazin calculado</option><option value="ATTRACTIVE">Bazin: atrativa</option><option value="NEUTRAL">Bazin: neutra</option><option value="EXPENSIVE">Bazin: cara</option><option value="BLOCKED">Bazin: bloqueado</option><option value="PENDING">Bazin: pendente</option><option value="NOT_APPLICABLE">Bazin: não aplicável</option></select>
+      <select id="dcfFilter" aria-label="Filtro DCF"><option value="">Todos os status DCF</option><option value="CALCULATED">DCF calculado</option><option value="ATTRACTIVE">DCF: margem ≥ 10%</option><option value="BLOCKED">DCF: bloqueado</option><option value="PENDING">DCF: pendente</option><option value="NOT_APPLICABLE">DCF: não aplicável</option></select>
+      <select id="sort"><option value="liquidity">Ordenar por liquidez</option><option value="quality">Ordenar por score qualidade</option><option value="roe">Ordenar por ROE 5A</option><option value="dy">Ordenar por DY 12M</option><option value="bazin">Ordenar por margem Bazin</option><option value="dcf">Ordenar por margem DCF</option><option value="pe">Ordenar por menor P/L</option><option value="dividends">Ordenar por consistência de dividendos</option><option value="ticker">Ordenar por ticker</option></select>
     </section>
-
-    <section class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Ticker</th><th>Empresa</th><th>Preço</th><th>Liquidez OK</th>
-          <th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th>
-          <th>DL/EBITDA</th><th>Margem líquida</th><th>DY 12M</th><th>Bazin</th>
-        </tr></thead>
-        <tbody id="body"></tbody>
-      </table>
-    </section>
-
+    <section class="table-wrap"><table><thead><tr><th>Ticker</th><th>Empresa</th><th>Preço</th><th>Liquidez OK</th><th>Filtro de qualidade</th><th>ROE médio 5A</th><th>CAGR lucro 5A</th><th>DL/EBITDA</th><th>Margem líquida</th><th>DY 12M</th><th>Bazin</th><th>DCF</th></tr></thead><tbody id="body"></tbody></table></section>
     <footer id="disclaimer"></footer>
   </main>
-  <script src="app.js?v=20260713-5"></script>
+  <script src="app.js?v=20260720-2"></script>
 </body>
 </html>
