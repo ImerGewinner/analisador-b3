@@ -59,6 +59,9 @@ jobs:
       - name: Calcular Selic, P/L setorial e DCF
         run: python run_advanced_safe_v2.py
 
+      - name: Aplicar governança de três anos ao DCF
+        run: python fix_dcf_governance.py
+
       - name: Corrigir consistência de dividendos e classificações
         run: python fix_dividend_consistency.py
 
