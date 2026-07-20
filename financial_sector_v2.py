@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 
 import app
 import financial_sector as base
@@ -14,6 +16,23 @@ def digits(value: object) -> str:
 
 def root_for(ticker: object) -> str:
     return str(ticker or "")[:4].upper()
+
+
+def match_norm(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch)).upper()
+    text = re.sub(
+        r"\b(S A|SA|S\.A\.|HOLDING|HOLDINGS|PARTICIPACOES|PARTICIPACAO|CIA|COMPANHIA)\b",
+        " ",
+        text,
+    )
+    return re.sub(r"[^A-Z0-9]+", " ", text).strip()
+
+
+def code_key(value: object) -> str:
+    raw = str(value or "").strip()
+    numeric = digits(raw)
+    return numeric.lstrip("0") or ("0" if numeric else raw.upper())
 
 
 def is_bank(company) -> bool:
@@ -30,15 +49,37 @@ def is_insurer(company) -> bool:
 
 
 def registry_score(company, registry: dict) -> float:
-    score = base.candidate_score(company, registry)
+    root = root_for(company["ticker"])
+    target = match_norm(
+        base.ALIASES.get(root)
+        or company["trading_name"]
+        or company["company_name"]
+    )
+    name = match_norm(registry.get("NomeInstituicao"))
+    if not target or not name:
+        score = 0.0
+    else:
+        similarity = SequenceMatcher(None, target, name).ratio()
+        target_tokens = set(target.split())
+        name_tokens = set(name.split())
+        overlap = len(target_tokens & name_tokens) / max(1, len(target_tokens))
+        score = similarity * 0.55 + overlap * 0.45
+
     company_cnpj = digits(company["cnpj"])
     leader_cnpj = digits(registry.get("CnpjInstituicaoLider"))
     if company_cnpj and leader_cnpj:
-        if company_cnpj[:8] == leader_cnpj[:8]:
-            score += 2.0
-        elif company_cnpj == leader_cnpj:
+        if company_cnpj == leader_cnpj:
             score += 3.0
+        elif company_cnpj[:8] == leader_cnpj[:8]:
+            score += 2.0
     return score
+
+
+def normalized_metrics(metrics_by_code: dict[str, dict]) -> dict[str, dict]:
+    result: dict[str, dict] = {}
+    for raw_code, metrics in metrics_by_code.items():
+        result[code_key(raw_code)] = metrics
+    return result
 
 
 def report_code(registry: dict, metrics_by_code: dict[str, dict]) -> str:
@@ -47,11 +88,11 @@ def report_code(registry: dict, metrics_by_code: dict[str, dict]) -> str:
         registry.get("CodConglomeradoFinanceiro"),
         registry.get("CodInst"),
     ]
-    normalized = [str(item or "").strip() for item in candidates]
-    for candidate in normalized:
-        if candidate and candidate in metrics_by_code:
-            return candidate
-    return next((candidate for candidate in normalized if candidate), "")
+    for candidate in candidates:
+        key = code_key(candidate)
+        if key and key in metrics_by_code:
+            return key
+    return code_key(next((item for item in candidates if item not in (None, "")), ""))
 
 
 def ensure_compatible_schema(conn) -> None:
@@ -81,7 +122,7 @@ def run() -> int:
             except Exception as exc:
                 report_errors.append(f"{report}: {exc!r}")
                 print(f"Aviso IFData relatório {report}: {exc}")
-        metrics_by_code = base.extract_metrics(report_rows)
+        metrics_by_code = normalized_metrics(base.extract_metrics(report_rows))
 
         all_companies = conn.execute(
             """
@@ -91,9 +132,7 @@ def run() -> int:
             """
         ).fetchall()
         financial_companies = [
-            row
-            for row in all_companies
-            if is_bank(row) or is_insurer(row)
+            row for row in all_companies if is_bank(row) or is_insurer(row)
         ]
 
         now = datetime.now(timezone.utc).isoformat()
@@ -107,29 +146,13 @@ def run() -> int:
                 conn.execute(
                     "INSERT INTO financial_regulatory VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (
-                        company["ticker"],
-                        period,
-                        "",
-                        company["company_name"],
-                        None,
-                        None,
-                        None,
-                        None,
-                        None,
-                        None,
-                        None,
-                        None,
+                        company["ticker"], period, "", company["company_name"], None,
+                        None, None, None, None, None, None, None,
                         "PENDENTE SUSEP — IFData não cobre seguradora como banco",
-                        base.BASE,
-                        now,
+                        base.BASE, now,
                     ),
                 )
-                pending.append(
-                    {
-                        "ticker": company["ticker"],
-                        "status": "PENDENTE SUSEP",
-                    }
-                )
+                pending.append({"ticker": company["ticker"], "status": "PENDENTE SUSEP"})
                 continue
 
             banks += 1
@@ -139,11 +162,9 @@ def run() -> int:
                 reverse=True,
             )
             score, match = ranked[0] if ranked else (0.0, {})
-            exact_cnpj = (
-                digits(company["cnpj"])[:8]
-                and digits(company["cnpj"])[:8]
-                == digits(match.get("CnpjInstituicaoLider"))[:8]
-            )
+            company_root = digits(company["cnpj"])[:8]
+            leader_root = digits(match.get("CnpjInstituicaoLider"))[:8]
+            exact_cnpj = bool(company_root and leader_root and company_root == leader_root)
             acceptable = exact_cnpj or score >= 0.52
             code = report_code(match, metrics_by_code) if acceptable else ""
             values = metrics_by_code.get(code, {}) if code else {}
@@ -173,27 +194,17 @@ def run() -> int:
                         "status": status,
                         "bestMatch": match.get("NomeInstituicao", ""),
                         "score": round(float(score), 4),
+                        "reportCode": code,
                     }
                 )
 
             conn.execute(
                 "INSERT INTO financial_regulatory VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
-                    company["ticker"],
-                    period,
-                    code,
+                    company["ticker"], period, code,
                     match.get("NomeInstituicao", "") if acceptable else "",
-                    score,
-                    basel,
-                    capital,
-                    tier1,
-                    efficiency,
-                    npl,
-                    coverage,
-                    values.get("provisions"),
-                    status,
-                    base.BASE,
-                    now,
+                    score, basel, capital, tier1, efficiency, npl, coverage,
+                    values.get("provisions"), status, base.BASE, now,
                 ),
             )
         conn.commit()
@@ -261,8 +272,7 @@ def run() -> int:
             }
         )
         status_path.write_text(
-            json.dumps(status_payload, ensure_ascii=False, indent=2),
-            encoding="utf-8",
+            json.dumps(status_payload, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         app.log(
             conn,
