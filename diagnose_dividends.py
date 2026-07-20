@@ -14,6 +14,7 @@ def main() -> int:
         report: dict = {
             "generatedAt": datetime.now(timezone.utc).isoformat(),
             "summary": {},
+            "failures": [],
             "roots": {},
         }
         summary = conn.execute(
@@ -21,6 +22,7 @@ def main() -> int:
             SELECT
               COUNT(*) AS imports,
               SUM(CASE WHEN status='OK' THEN 1 ELSE 0 END) AS ok,
+              SUM(CASE WHEN status='PENDENTE' THEN 1 ELSE 0 END) AS pending,
               SUM(CASE WHEN status='ERRO' THEN 1 ELSE 0 END) AS errors,
               (SELECT COUNT(*) FROM cash_dividends) AS events,
               (SELECT COUNT(*) FROM cash_dividends WHERE eligible_dpa=1) AS eligible_events
@@ -28,8 +30,16 @@ def main() -> int:
             """
         ).fetchone()
         report["summary"] = dict(summary) if summary else {}
+        report["failures"] = [
+            dict(row)
+            for row in conn.execute(
+                "SELECT root,status,message,imported_at,source_url FROM dividend_imports WHERE status<>'OK' ORDER BY status,root"
+            )
+        ]
 
-        for root in SAMPLES:
+        selected = set(SAMPLES)
+        selected.update(item["root"] for item in report["failures"])
+        for root in sorted(selected):
             imp = conn.execute(
                 "SELECT * FROM dividend_imports WHERE root=?", (root,)
             ).fetchone()
@@ -40,7 +50,7 @@ def main() -> int:
                   FROM cash_dividends
                  WHERE root=?
                  ORDER BY last_date_prior DESC, ticker, label
-                 LIMIT 40
+                 LIMIT 80
                 """,
                 (root,),
             ).fetchall()
@@ -58,7 +68,7 @@ def main() -> int:
         (app.DOCS_DIR / "dividends_diagnostics.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
         )
-        print(json.dumps(report["summary"], ensure_ascii=False))
+        print(json.dumps({"summary": report["summary"], "failures": report["failures"]}, ensure_ascii=False))
         return 0
     finally:
         conn.close()
