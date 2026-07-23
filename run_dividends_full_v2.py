@@ -56,7 +56,7 @@ def historical_all_candidates(root: str) -> dict:
                     event["label"],
                     event["approvedOn"],
                     event["lastDatePrior"],
-                    round(float(event["rate"]), 12),
+                    round(float(event["rate"]), 8),
                 )
                 if key in seen:
                     continue
@@ -113,6 +113,11 @@ def fetch_dividends_v2(root: str) -> dict:
         info = (supplement or {}).get("info") or (supplement or {}).get("Info") or {}
         if isinstance(info, dict) and info:
             historical["info"] = info
+        if supplement_events:
+            historical["cashDividends"] = historical_events + supplement_events
+            historical["sourceMode"] = (
+                "GetListedCashDividends-5Y+GetListedSupplementCompany-12M"
+            )
         return historical
 
     if supplement_events:

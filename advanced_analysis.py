@@ -17,7 +17,9 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 import app
+import dividends
 import eps_loader
+import quality_rules
 
 BCB_SELIC_SERIES = 432
 BCB_SELIC_URL = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{BCB_SELIC_SERIES}/dados"
@@ -27,6 +29,8 @@ CVM_FCF_SOURCE = "CVM DFP — Demonstração dos Fluxos de Caixa"
 WACC = 0.12
 G_MAX = 0.06
 DCF_HAIRCUT = 0.75
+TERMINAL_GROWTH = 0.03
+DCF_YEARS = 10
 
 
 def norm_text(value: object) -> str:
@@ -93,6 +97,10 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
         );
         """
     )
+    app.ensure_column(conn, "advanced_metrics", "fcf_cagr_3y", "REAL")
+    app.ensure_column(conn, "advanced_metrics", "dcf_enterprise_value", "REAL")
+    app.ensure_column(conn, "advanced_metrics", "dcf_equity_value", "REAL")
+    app.ensure_column(conn, "advanced_metrics", "dcf_intrinsic_price", "REAL")
     conn.commit()
 
 
@@ -242,8 +250,23 @@ def dividend_history(conn: sqlite3.Connection, ticker: str, quote_date: str) -> 
     years = list(range(quote_year - 5, quote_year))
     values: dict[int, float] = {}
     for year in years:
-        row = conn.execute("SELECT SUM(rate) total FROM cash_dividends WHERE ticker=? AND eligible_dpa=1 AND last_date_prior>=? AND last_date_prior<=?", (ticker, f"{year}-01-01", f"{year}-12-31")).fetchone()
-        values[year] = float(row["total"] or 0) if row else 0.0
+        rows = list(
+            conn.execute(
+                """
+                SELECT label,approved_on,last_date_prior,payment_date,rate,related_to,remarks
+                  FROM cash_dividends
+                 WHERE ticker=? AND eligible_dpa=1
+                   AND last_date_prior>=? AND last_date_prior<=?
+                """,
+                (ticker, f"{year}-01-01", f"{year}-12-31"),
+            )
+        )
+        ordinary = [
+            event
+            for event in dividends.deduplicate_events(rows)
+            if not dividends.is_explicit_extraordinary(event)
+        ]
+        values[year] = sum(float(event["rate"] or 0) for event in ordinary)
     paid = sum(value > 0 for value in values.values())
     streak = 0
     for year in reversed(years):
@@ -271,34 +294,85 @@ def dilution_metric(conn: sqlite3.Connection, cnpj: str, share_class: str) -> tu
     return change, status
 
 
+def series_cagr(values: list[float]) -> float | None:
+    if len(values) < 2 or values[0] <= 0 or values[-1] <= 0:
+        return None
+    return (values[-1] / values[0]) ** (1 / (len(values) - 1)) - 1
+
+
+def discounted_fcff_valuation(
+    *,
+    fcf_base: float,
+    growth: float,
+    net_debt: float,
+    shares: float,
+    price: float,
+) -> dict[str, float]:
+    if fcf_base <= 0 or shares <= 0 or price <= 0:
+        raise ValueError("DCF exige FCFF, ações e fechamento positivos")
+    if growth <= -1:
+        raise ValueError("crescimento explícito inválido")
+    if WACC <= TERMINAL_GROWTH:
+        raise ValueError("WACC deve superar o crescimento terminal")
+
+    present_value_explicit = 0.0
+    fcff_year = fcf_base
+    for year in range(1, DCF_YEARS + 1):
+        fcff_year *= 1 + growth
+        present_value_explicit += fcff_year / ((1 + WACC) ** year)
+
+    terminal_value_year_10 = (
+        fcff_year * (1 + TERMINAL_GROWTH) / (WACC - TERMINAL_GROWTH)
+    )
+    present_value_terminal = terminal_value_year_10 / ((1 + WACC) ** DCF_YEARS)
+    enterprise_value = present_value_explicit + present_value_terminal
+    equity_value = enterprise_value - net_debt
+    intrinsic_price = equity_value / shares
+    reference_price = intrinsic_price * DCF_HAIRCUT
+    margin = reference_price / price - 1
+    return {
+        "enterprise_value": enterprise_value,
+        "equity_value": equity_value,
+        "intrinsic_price": intrinsic_price,
+        "reference_price": reference_price,
+        "margin": margin,
+        "present_value_explicit": present_value_explicit,
+        "present_value_terminal": present_value_terminal,
+    }
+
+
 def classification_for(row: sqlite3.Row, advanced: dict) -> tuple[str, str]:
+    if "eligible" in row.keys() and str(row["eligible"] or "").upper() != "SIM":
+        return quality_rules.NOT_CLASSIFIED, "A ação ficou fora do filtro mínimo de liquidez."
     quality = str(row["quality_status"] or "")
-    roe = row["roe_avg_5y"]
+    blocked = quality_rules.blocked_classification(quality)
+    if blocked:
+        return blocked
     growth = row["profit_cagr_5y"]
-    margin_trend = str(row["margin_trend"] or "")
     bazin_margin = row["bazin_margin"]
     dcf_margin = advanced.get("dcf_margin")
-    dividend_years = advanced.get("dividend_years_5y", 0)
-    payout = row["payout"]
-    if quality == "ALERTA VERMELHO":
-        return "Value Trap", "Alerta Vermelho no checklist; valuation bloqueado."
-    if quality.startswith("PENDENTE"):
-        return "Pendente", "Fundamentos ou critérios essenciais ainda não foram concluídos."
-    if quality.startswith("APROVADA PARCIAL"):
-        return "Dividend Quality — ressalva setorial", "Proventos e retorno podem ser avaliados, mas métricas regulatórias do setor financeiro permanecem pendentes."
-    if quality == "APROVADA NO FILTRO" and roe is not None and float(roe) >= 0.20 and growth is not None and float(growth) >= 0.05 and margin_trend == "ESTÁVEL/CRESCENTE":
-        return "Wide Moat Compounder", "ROE elevado, crescimento positivo e margem historicamente estável/crescente."
-    if quality == "APROVADA NO FILTRO" and ((bazin_margin is not None and float(bazin_margin) >= 0) or (dcf_margin is not None and float(dcf_margin) >= 0)):
-        return "High Quality Value", "Filtro de qualidade aprovado e ao menos um método de valuation sem margem negativa."
-    if quality == "APROVADA NO FILTRO" and dividend_years >= 5 and payout is not None and float(payout) < 0.90:
-        return "Dividend Quality", "Dividendos presentes nos cinco anos e payout abaixo de 90%."
-    return "Qualidade aprovada — valuation exigente", "Negócio passou no filtro, mas os métodos de valuation não indicam margem positiva ou estão pendentes."
+    margins = [
+        float(value)
+        for value in (bazin_margin, dcf_margin)
+        if value is not None
+    ]
+    growth_label = "positivo" if growth is not None and float(growth) > 0 else "pendente"
+    if not margins:
+        valuation_label = "não calculado"
+    elif any(value >= 0 for value in margins):
+        valuation_label = "margem não negativa"
+    else:
+        valuation_label = "margem negativa"
+    return (
+        f"Qualidade: aprovada | Crescimento: {growth_label} | Valuation: {valuation_label}",
+        "Resumo factual dos três pilares; não representa recomendação nem sinal de compra.",
+    )
 
 
 def compute_metrics(conn: sqlite3.Connection, selic: float | None) -> dict[str, int]:
     rows = conn.execute(
         """SELECT u.ticker,u.cnpj,u.segment,u.price,u.quote_date,u.eligible,
-                  f.roe_avg_5y,f.profit_cagr_5y,f.margin_trend,f.quality_status,f.is_financial,f.payout,
+                  f.roe_avg_5y,f.profit_cagr_5y,f.margin_trend,f.quality_status,f.is_financial,f.payout,f.net_debt,
                   dm.lpa,dm.dividend_yield,dm.total_shares,dm.bazin_margin,dm.valuation_status
              FROM universe u LEFT JOIN fundamentals f ON f.cnpj=u.cnpj
              LEFT JOIN dividend_metrics dm ON dm.ticker=u.ticker WHERE u.principal='SIM'"""
@@ -312,7 +386,7 @@ def compute_metrics(conn: sqlite3.Connection, selic: float | None) -> dict[str, 
             sector_values.setdefault(str(row["segment"]), []).append(pe)
     now = datetime.now(timezone.utc).isoformat()
     conn.execute("DELETE FROM advanced_metrics")
-    counters = {"processed": 0, "dcf_enabled": 0, "dcf_attractive": 0, "dividend_consistent": 0}
+    counters = {"processed": 0, "dcf_enabled": 0, "dcf_margin_ge_10": 0, "dividend_consistent": 0}
     for row in rows:
         ticker = str(row["ticker"])
         cnpj = str(row["cnpj"] or "")
@@ -330,32 +404,58 @@ def compute_metrics(conn: sqlite3.Connection, selic: float | None) -> dict[str, 
             pe_status = "ACIMA DO SETOR"
         else:
             pe_status = "PRÓXIMO AO SETOR"
-        fcf_rows = conn.execute("SELECT fcf FROM fcf_history WHERE cnpj=? AND fcf IS NOT NULL ORDER BY year DESC LIMIT 3", (cnpj,)).fetchall()
+        fcf_rows = conn.execute(
+            "SELECT year,fcf FROM fcf_history WHERE cnpj=? AND fcf IS NOT NULL ORDER BY year DESC LIMIT 3",
+            (cnpj,),
+        ).fetchall()
+        fcf_rows = list(reversed(fcf_rows))
         fcf_values = [float(item["fcf"]) for item in fcf_rows if item["fcf"] is not None]
-        fcf_avg = mean(fcf_values) if len(fcf_values) >= 2 else None
+        fcf_years = [int(item["year"]) for item in fcf_rows]
+        complete_fcf = len(fcf_years) == 3 and max(fcf_years) - min(fcf_years) == 2
+        fcf_avg = mean(fcf_values) if complete_fcf else None
+        fcf_cagr = series_cagr(fcf_values) if complete_fcf else None
         dcf_growth = dcf_fair = dcf_margin = None
+        dcf_enterprise = dcf_equity = dcf_intrinsic = None
         quality = str(row["quality_status"] or "")
-        if bool(row["is_financial"]):
+        if str(row["eligible"] or "").upper() != "SIM":
+            dcf_status = "Valuation bloqueado — fora do filtro de liquidez."
+        elif bool(row["is_financial"]):
             dcf_status = "NÃO APLICÁVEL — setor financeiro"
-        elif quality == "ALERTA VERMELHO":
-            dcf_status = "BLOQUEADO — Alerta Vermelho"
-        elif quality != "APROVADA NO FILTRO":
-            dcf_status = "BLOQUEADO — filtro de qualidade não aprovado"
+        elif not quality_rules.is_approved(quality):
+            dcf_status = "Valuation bloqueado pelo filtro de qualidade."
         elif fcf_avg is None or fcf_avg <= 0:
-            dcf_status = "PENDENTE — FCF médio 3A indisponível ou não positivo"
+            dcf_status = "PENDENTE — exige três exercícios completos e positivos de FCFF"
+        elif fcf_cagr is None:
+            dcf_status = "PENDENTE — CAGR do FCFF 3A não calculável"
+        elif row["profit_cagr_5y"] is None:
+            dcf_status = "PENDENTE — CAGR do lucro 5A não calculável"
+        elif row["net_debt"] is None:
+            dcf_status = "PENDENTE — dívida líquida não conciliada"
         elif not row["total_shares"] or float(row["total_shares"]) <= 0:
             dcf_status = "PENDENTE — quantidade de ações indisponível"
         elif not row["price"] or float(row["price"]) <= 0:
             dcf_status = "PENDENTE — fechamento B3 indisponível"
         else:
-            dcf_growth = min(max(float(row["profit_cagr_5y"] or 0), 0.0), G_MAX)
-            intrinsic_equity = fcf_avg * ((1 + dcf_growth) ** 10) / (WACC - dcf_growth)
-            dcf_fair = intrinsic_equity * DCF_HAIRCUT / float(row["total_shares"])
-            dcf_margin = dcf_fair / float(row["price"]) - 1
-            dcf_status = "CALCULADO — DCF simplificado"
-            counters["dcf_enabled"] += 1
-            if dcf_margin >= 0.10:
-                counters["dcf_attractive"] += 1
+            dcf_growth = min(fcf_cagr, float(row["profit_cagr_5y"]), G_MAX)
+            try:
+                valuation = discounted_fcff_valuation(
+                    fcf_base=fcf_avg,
+                    growth=dcf_growth,
+                    net_debt=float(row["net_debt"]),
+                    shares=float(row["total_shares"]),
+                    price=float(row["price"]),
+                )
+                dcf_enterprise = valuation["enterprise_value"]
+                dcf_equity = valuation["equity_value"]
+                dcf_intrinsic = valuation["intrinsic_price"]
+                dcf_fair = valuation["reference_price"]
+                dcf_margin = valuation["margin"]
+                dcf_status = "CALCULADO — DCF FCFF descontado"
+                counters["dcf_enabled"] += 1
+                if dcf_margin >= 0.10:
+                    counters["dcf_margin_ge_10"] += 1
+            except ValueError as exc:
+                dcf_status = f"PENDENTE — {exc}"
         dividend_years, dividend_streak, dpa_cagr = dividend_history(conn, ticker, str(row["quote_date"] or ""))
         if dividend_years >= 5:
             counters["dividend_consistent"] += 1
@@ -363,9 +463,22 @@ def compute_metrics(conn: sqlite3.Connection, selic: float | None) -> dict[str, 
         spread = float(row["dividend_yield"]) - selic if row["dividend_yield"] is not None and selic is not None else None
         classification, reason = classification_for(row, {"dcf_margin": dcf_margin, "dividend_years_5y": dividend_years})
         conn.execute(
-            """INSERT INTO advanced_metrics(ticker,pe,sector_pe_median,pe_vs_sector,sector_pe_status,fcf_avg_3y,dcf_growth,dcf_fair_price,dcf_margin,dcf_status,dividend_years_5y,dividend_streak_5y,dpa_cagr_5y,dilution_5y,dilution_status,selic,dy_selic_spread,classification,classification_reason,source_url,updated_at)
-               VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-            (ticker, pe, sector_median, pe_vs_sector, pe_status, fcf_avg, dcf_growth, dcf_fair, dcf_margin, dcf_status, dividend_years, dividend_streak, dpa_cagr, dilution, dilution_status, selic, spread, classification, reason, f"{CVM_FCF_SOURCE}; {BCB_SELIC_SOURCE}", now),
+            """INSERT INTO advanced_metrics(
+               ticker,pe,sector_pe_median,pe_vs_sector,sector_pe_status,
+               fcf_avg_3y,fcf_cagr_3y,dcf_growth,dcf_enterprise_value,
+               dcf_equity_value,dcf_intrinsic_price,dcf_fair_price,dcf_margin,
+               dcf_status,dividend_years_5y,dividend_streak_5y,dpa_cagr_5y,
+               dilution_5y,dilution_status,selic,dy_selic_spread,classification,
+               classification_reason,source_url,updated_at)
+               VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                ticker, pe, sector_median, pe_vs_sector, pe_status, fcf_avg,
+                fcf_cagr, dcf_growth, dcf_enterprise, dcf_equity, dcf_intrinsic,
+                dcf_fair, dcf_margin, dcf_status, dividend_years,
+                dividend_streak, dpa_cagr, dilution, dilution_status, selic,
+                spread, classification, reason,
+                f"{CVM_FCF_SOURCE}; {BCB_SELIC_SOURCE}", now,
+            ),
         )
         counters["processed"] += 1
     conn.commit()
@@ -383,7 +496,12 @@ def enrich_site(conn: sqlite3.Connection, counters: dict[str, int], selic_ref: s
         item.update({
             "pl": fmt_multiple(metric["pe"]), "plRaw": metric["pe"], "plSetor": fmt_multiple(metric["sector_pe_median"]), "plSetorRaw": metric["sector_pe_median"],
             "plVsSetor": fmt_pct(metric["pe_vs_sector"], True), "plVsSetorRaw": metric["pe_vs_sector"], "statusPlSetor": metric["sector_pe_status"],
-            "fcfMedio3A": fmt_money(metric["fcf_avg_3y"]), "fcfMedio3ARaw": metric["fcf_avg_3y"], "crescimentoDcf": fmt_pct(metric["dcf_growth"]), "crescimentoDcfRaw": metric["dcf_growth"],
+            "fcfMedio3A": fmt_money(metric["fcf_avg_3y"]), "fcfMedio3ARaw": metric["fcf_avg_3y"],
+            "cagrFcf3A": fmt_pct(metric["fcf_cagr_3y"]), "cagrFcf3ARaw": metric["fcf_cagr_3y"],
+            "crescimentoDcf": fmt_pct(metric["dcf_growth"]), "crescimentoDcfRaw": metric["dcf_growth"],
+            "valorFirmaDcf": fmt_money(metric["dcf_enterprise_value"]), "valorFirmaDcfRaw": metric["dcf_enterprise_value"],
+            "valorPatrimonioDcf": fmt_money(metric["dcf_equity_value"]), "valorPatrimonioDcfRaw": metric["dcf_equity_value"],
+            "valorIntrinsecoDcf": fmt_money(metric["dcf_intrinsic_price"]), "valorIntrinsecoDcfRaw": metric["dcf_intrinsic_price"],
             "precoJustoDcf": fmt_money(metric["dcf_fair_price"]), "precoJustoDcfRaw": metric["dcf_fair_price"], "margemDcf": fmt_pct(metric["dcf_margin"], True), "margemDcfRaw": metric["dcf_margin"], "statusDcf": metric["dcf_status"],
             "anosDividendos5A": metric["dividend_years_5y"], "sequenciaDividendos5A": metric["dividend_streak_5y"], "cagrDpa5A": fmt_pct(metric["dpa_cagr_5y"]), "cagrDpa5ARaw": metric["dpa_cagr_5y"],
             "diluicao5A": fmt_pct(metric["dilution_5y"], True), "diluicao5ARaw": metric["dilution_5y"], "statusDiluicao": metric["dilution_status"],
@@ -393,16 +511,24 @@ def enrich_site(conn: sqlite3.Connection, counters: dict[str, int], selic_ref: s
     selic_row = conn.execute("SELECT * FROM macro_rates WHERE code=?", (str(BCB_SELIC_SERIES),)).fetchone()
     payload["macro"] = {"selic": fmt_pct(selic_row["value"]) if selic_row else "Pendente", "selicRaw": selic_row["value"] if selic_row else None, "referenceDate": selic_ref, "source": BCB_SELIC_SOURCE}
     payload["dcfEnabled"] = counters["dcf_enabled"]
-    payload["dcfAttractive"] = counters["dcf_attractive"]
+    payload["dcfMarginGe10"] = counters["dcf_margin_ge_10"]
+    payload.pop("dcfAttractive", None)
     payload["dividendConsistent5y"] = counters["dividend_consistent"]
     payload["advancedUpdatedAt"] = datetime.now(timezone.utc).isoformat()
-    payload.setdefault("methodology", {})["dcf"] = "DCF simplificado somente para não financeiras aprovadas: FCF médio 3A; g limitado a 6%; WACC 12%; desconto de segurança de 25%; valor dividido pela quantidade de ações."
+    payload.setdefault("methodology", {})["dcf"] = (
+        "DCF somente para não financeiras integralmente aprovadas e com três exercícios "
+        "completos de FCFF. Projeta e desconta separadamente 10 fluxos; g explícito é o menor "
+        "entre CAGR do FCFF, CAGR do lucro e 6%; WACC 12%; crescimento terminal 3%. O valor "
+        "terminal é descontado, a dívida líquida é subtraída e a referência por ação recebe "
+        "25% de margem de segurança."
+    )
     payload["methodology"]["macro"] = "Selic: meta oficial do Copom, série SGS 432 do Banco Central. Spread DY–Selic é apenas comparação de renda corrente, sem equivalência de risco."
     payload["methodology"]["consistency"] = "Dividendos 5A usam anos-calendário completos; diluição é estimada por lucro líquido ÷ LPA básico da DRE CVM e pode ficar pendente para Units."
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     status_path = app.DOCS_DIR / "status.json"
     status = json.loads(status_path.read_text(encoding="utf-8")) if status_path.exists() else {}
-    status.update({"advancedUpdatedAt": payload["advancedUpdatedAt"], "selic": payload["macro"]["selicRaw"], "selicReferenceDate": selic_ref, "dcfEnabled": counters["dcf_enabled"], "dcfAttractive": counters["dcf_attractive"], "dividendConsistent5y": counters["dividend_consistent"]})
+    status.pop("dcfAttractive", None)
+    status.update({"advancedUpdatedAt": payload["advancedUpdatedAt"], "selic": payload["macro"]["selicRaw"], "selicReferenceDate": selic_ref, "dcfEnabled": counters["dcf_enabled"], "dcfMarginGe10": counters["dcf_margin_ge_10"], "dividendConsistent5y": counters["dividend_consistent"]})
     status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
     return payload
 

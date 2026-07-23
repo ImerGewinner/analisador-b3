@@ -9,6 +9,7 @@ import app
 
 def run() -> int:
     conn = app.connect()
+    advanced.ensure_schema(conn)
     try:
         rows = conn.execute(
             """
@@ -19,20 +20,29 @@ def run() -> int:
         ).fetchall()
         invalidated = 0
         for row in rows:
-            count = conn.execute(
+            years = [
+                int(item["year"])
+                for item in conn.execute(
                 """
-                SELECT COUNT(*) AS total
+                SELECT year
                   FROM fcf_history
                  WHERE cnpj=? AND fcf IS NOT NULL
+                 ORDER BY year DESC LIMIT 3
                 """,
                 (row["cnpj"],),
-            ).fetchone()["total"]
-            if str(row["dcf_status"] or "").startswith("CALCULADO") and int(count or 0) < 3:
+                )
+            ]
+            complete = len(years) == 3 and max(years) - min(years) == 2
+            if str(row["dcf_status"] or "").startswith("CALCULADO") and not complete:
                 conn.execute(
                     """
                     UPDATE advanced_metrics
                        SET fcf_avg_3y=NULL,
                            dcf_growth=NULL,
+                           fcf_cagr_3y=NULL,
+                           dcf_enterprise_value=NULL,
+                           dcf_equity_value=NULL,
+                           dcf_intrinsic_price=NULL,
                            dcf_fair_price=NULL,
                            dcf_margin=NULL,
                            dcf_status='PENDENTE — exige três exercícios completos de FCF',
@@ -48,7 +58,9 @@ def run() -> int:
             row["ticker"]: row
             for row in conn.execute(
                 """
-                SELECT ticker,fcf_avg_3y,dcf_growth,dcf_fair_price,dcf_margin,dcf_status
+                SELECT ticker,fcf_avg_3y,fcf_cagr_3y,dcf_growth,
+                       dcf_enterprise_value,dcf_equity_value,dcf_intrinsic_price,
+                       dcf_fair_price,dcf_margin,dcf_status
                   FROM advanced_metrics
                 """
             )
@@ -65,6 +77,14 @@ def run() -> int:
                     "fcfMedio3ARaw": metric["fcf_avg_3y"],
                     "crescimentoDcf": advanced.fmt_pct(metric["dcf_growth"]),
                     "crescimentoDcfRaw": metric["dcf_growth"],
+                    "cagrFcf3A": advanced.fmt_pct(metric["fcf_cagr_3y"]),
+                    "cagrFcf3ARaw": metric["fcf_cagr_3y"],
+                    "valorFirmaDcf": advanced.fmt_money(metric["dcf_enterprise_value"]),
+                    "valorFirmaDcfRaw": metric["dcf_enterprise_value"],
+                    "valorPatrimonioDcf": advanced.fmt_money(metric["dcf_equity_value"]),
+                    "valorPatrimonioDcfRaw": metric["dcf_equity_value"],
+                    "valorIntrinsecoDcf": advanced.fmt_money(metric["dcf_intrinsic_price"]),
+                    "valorIntrinsecoDcfRaw": metric["dcf_intrinsic_price"],
                     "precoJustoDcf": advanced.fmt_money(metric["dcf_fair_price"]),
                     "precoJustoDcfRaw": metric["dcf_fair_price"],
                     "margemDcf": advanced.fmt_pct(metric["dcf_margin"], True),
@@ -75,17 +95,18 @@ def run() -> int:
         enabled = conn.execute(
             "SELECT COUNT(*) FROM advanced_metrics WHERE dcf_status LIKE 'CALCULADO%'"
         ).fetchone()[0]
-        attractive = conn.execute(
+        margin_ge_10 = conn.execute(
             "SELECT COUNT(*) FROM advanced_metrics WHERE dcf_status LIKE 'CALCULADO%' AND dcf_margin>=0.10"
         ).fetchone()[0]
         now = datetime.now(timezone.utc).isoformat()
         payload["dcfEnabled"] = int(enabled)
-        payload["dcfAttractive"] = int(attractive)
+        payload["dcfMarginGe10"] = int(margin_ge_10)
+        payload.pop("dcfAttractive", None)
         payload["dcfGovernanceUpdatedAt"] = now
         payload.setdefault("methodology", {})["dcf"] = (
-            "DCF simplificado somente para não financeiras aprovadas e com três exercícios "
-            "completos de FCF: média 3A; g limitado a 6%; WACC 12%; desconto de segurança "
-            "de 25%; valor dividido pela quantidade de ações."
+            "DCF somente para não financeiras aprovadas e com três exercícios completos e "
+            "consecutivos de FCFF. Dez fluxos e o terminal são descontados; dívida líquida é "
+            "subtraída; WACC 12%, crescimento terminal 3% e margem de segurança de 25%."
         )
         data_path.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -93,10 +114,11 @@ def run() -> int:
 
         status_path = app.DOCS_DIR / "status.json"
         status_payload = json.loads(status_path.read_text(encoding="utf-8"))
+        status_payload.pop("dcfAttractive", None)
         status_payload.update(
             {
                 "dcfEnabled": int(enabled),
-                "dcfAttractive": int(attractive),
+                "dcfMarginGe10": int(margin_ge_10),
                 "dcfInvalidatedForMissingYears": invalidated,
                 "dcfGovernanceUpdatedAt": now,
             }
@@ -114,7 +136,7 @@ def run() -> int:
                 {
                     "status": "OK",
                     "dcf_enabled": int(enabled),
-                    "dcf_attractive": int(attractive),
+                    "dcf_margin_ge_10": int(margin_ge_10),
                     "invalidated": invalidated,
                 },
                 ensure_ascii=False,

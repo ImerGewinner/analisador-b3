@@ -16,6 +16,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+import quality_rules
+
 CVM_BASE = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC"
 FUNDAMENTALS_SOURCE = (
     "CVM DFP/ITR — dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/ e ITR/DADOS/"
@@ -26,16 +28,39 @@ QUALITY = {
     "debt_ebitda_max": 3.0,
     "positive_years_min": 4,
 }
-FINANCIAL_RE = re.compile(
-    r"BANCO|BANCOS|FINANCEIR|SEGUR|PREVID|CREDITO|CRÉDITO|INTERMEDI|RESSEGURO",
-    re.I,
-)
+FINANCIAL_SEGMENTS = {
+    "BANCOS",
+    "SEGURADORAS",
+    "RESSEGURADORAS",
+    "SERVICOS FINANCEIROS DIVERSOS",
+}
 
 
 def norm_text(value: object) -> str:
     text = unicodedata.normalize("NFKD", str(value or ""))
     text = "".join(ch for ch in text if not unicodedata.combining(ch))
     return re.sub(r"\s+", " ", text).strip().upper()
+
+
+def is_financial_company(metadata: dict) -> bool:
+    """Classify by B3 segment, avoiding legal-name false positives.
+
+    QUAL3, for example, contains "corretora de seguros" in its legal name but
+    belongs to the healthcare segment and must use the non-financial filter.
+    """
+    segment = norm_text(metadata.get("segment"))
+    if segment in FINANCIAL_SEGMENTS:
+        return True
+    if re.search(
+        r"\b(?:SOCIEDADES? DE )?CREDITO E FINANCIAMENTO\b|"
+        r"\bINTERMEDIARIOS FINANCEIROS\b|\bPREVIDENCIA\b",
+        segment,
+    ):
+        return True
+    if segment:
+        return False
+    company = norm_text(metadata.get("company"))
+    return bool(re.search(r"\bBANCOS?\b|\bSEGURADORAS?\b|\bRESSEGURADORAS?\b", company))
 
 
 def norm_cnpj(value: object) -> str:
@@ -276,8 +301,23 @@ def slope(values: list[float]) -> float | None:
     return sum((x-xbar)*(y-ybar) for x,y in zip(xs,values))/den if den else None
 
 
-def criterion(name: str, value: str, limit: str, status: str, note: str = "") -> dict:
-    return {"name":name,"value":value,"limit":limit,"status":status,"note":note}
+def criterion(
+    name: str,
+    value: str,
+    limit: str,
+    status: str,
+    note: str = "",
+    *,
+    essential: bool = True,
+) -> dict:
+    return {
+        "name": name,
+        "value": value,
+        "limit": limit,
+        "status": status,
+        "note": note,
+        "essential": essential,
+    }
 
 
 def pct(value: float | None) -> str:
@@ -313,23 +353,55 @@ def calculate_company(
     net_debt = debt-cash if debt is not None and cash is not None else None
     debt_ratio = net_debt/ebitda if net_debt is not None and ebitda and ebitda>0 else None
 
-    criteria, failures, passes, pending = [],0,0,0
-    def add(name,value,limit,status,note=""):
-        nonlocal failures,passes,pending
-        criteria.append(criterion(name,value,limit,status,note))
-        if status == "APROVADO": passes += 1
-        elif status == "REPROVADO": failures += 1
-        else: pending += 1
+    criteria: list[dict] = []
+
+    def add(name, value, limit, status, note="", *, essential=True):
+        criteria.append(
+            criterion(
+                name,
+                value,
+                limit,
+                status,
+                note,
+                essential=essential,
+            )
+        )
 
     add("ROE médio 5A",pct(roe),"> 12,00%","PENDENTE" if roe is None else ("APROVADO" if roe>0.12 else "REPROVADO"))
     add("Crescimento do lucro 5A",pct(cagr),"> 0,00%","PENDENTE" if cagr is None else ("APROVADO" if cagr>0 else "REPROVADO"))
     if financial:
-        add("Dívida líquida/EBITDA","N/A SETOR","Não aplicável","PENDENTE","Substituir por Basileia, inadimplência, cobertura, provisões e eficiência.")
+        add(
+            "Dívida líquida/EBITDA",
+            "N/A SETOR",
+            "Não aplicável",
+            "INFORMATIVO",
+            "Métrica industrial inadequada para instituições financeiras.",
+            essential=False,
+        )
     else:
         add("Dívida líquida/EBITDA",mult(debt_ratio),"< 3,00x","PENDENTE" if debt_ratio is None else ("APROVADO" if debt_ratio<3 else "REPROVADO"))
-    add("Margem líquida",pct(margin_latest),"Estável ou crescente","PENDENTE" if margin_trend=="PENDENTE" else ("APROVADO" if margin_trend=="ESTÁVEL/CRESCENTE" else "REPROVADO"),margin_trend)
+    if financial:
+        add(
+            "Margem líquida",
+            pct(margin_latest),
+            "Contexto setorial",
+            "INFORMATIVO",
+            "Não integra o filtro financeiro; eficiência e risco de crédito são usados no lugar.",
+            essential=False,
+        )
+    else:
+        add("Margem líquida",pct(margin_latest),"Estável ou crescente","PENDENTE" if margin_trend=="PENDENTE" else ("APROVADO" if margin_trend=="ESTÁVEL/CRESCENTE" else "REPROVADO"),margin_trend)
     add("Lucros positivos 5A",f"{positive}/5","≥ 4/5","APROVADO" if positive>=4 else "REPROVADO")
     add("Payout","Pendente","< 90,00%","PENDENTE","Proventos ainda não conciliados; valuation bloqueado.")
+
+    if financial:
+        add(
+            "Dados regulatórios essenciais",
+            "Pendente",
+            "Basileia, eficiência, inadimplência e cobertura conciliados",
+            "PENDENTE",
+            "O IFData/SUSEP precisa ser integrado antes da decisão do filtro.",
+        )
 
     recurring_losses = positive <= 2 or sum((profits[y] or 0)<=0 for y in years[-3:] if profits[y] is not None)>=2
     debt_series=[]
@@ -338,29 +410,27 @@ def calculate_company(
         if row and row["debt"] is not None and row["cash"] is not None:
             debt_series.append(row["debt"]-row["cash"])
     explosive = len(debt_series)>=3 and debt_series[-1]>0 and debt_series[0]>0 and debt_series[-1]>debt_series[0]*1.8
-    red = failures>=2 or recurring_losses or explosive
-    if red:
-        status="ALERTA VERMELHO"
-    elif financial:
-        status="APROVADA PARCIAL — SETOR FINANCEIRO"
-    else:
-        status="APROVADA PARCIAL — PAYOUT PENDENTE"
-    evaluated=passes+failures
-    score=round(100*passes/evaluated,1) if evaluated else None
-    reasons=[]
-    if failures: reasons.append(f"{failures} reprovação(ões)")
-    if recurring_losses: reasons.append("prejuízo recorrente/baixa consistência")
-    if explosive: reasons.append("dívida em deterioração acelerada")
-    if financial: reasons.append("critérios ajustados ao setor financeiro")
-    if pending: reasons.append(f"{pending} item(ns) pendente(s)")
+    structural_red = recurring_losses or explosive
+    result = quality_rules.classify_quality(
+        criteria,
+        structural_red=structural_red,
+        sector_pending=financial,
+    )
+    evaluated = result.approved + result.rejected
+    score = round(100 * result.approved / evaluated, 1) if evaluated else None
+    reason = quality_rules.quality_reason(
+        result,
+        structural_red=structural_red,
+        sector_pending=financial,
+    )
     return {
         "reference_date":reference_date,"origin":origin,"revenue_ltm":revenue,
         "profit_ltm":profit,"ebitda_ltm":ebitda,"equity":equity,"cash":cash,
         "debt":debt,"net_debt":net_debt,"roe_avg_5y":roe,"profit_cagr_5y":cagr,
         "net_margin_latest":margin_latest,"margin_trend":margin_trend,
         "positive_profits_5y":positive,"net_debt_ebitda":debt_ratio,"payout":None,
-        "quality_status":status,"quality_score":score,"failures":failures,
-        "pending":pending,"reason":"; ".join(reasons) or "sem reprovações calculáveis",
+        "quality_status":result.status,"quality_score":score,"failures":result.rejected,
+        "pending":result.pending,"reason":reason,
         "criteria_json":json.dumps(criteria,ensure_ascii=False,separators=(",",":")),
     }
 
@@ -394,7 +464,7 @@ def calculate_fundamentals(conn: sqlite3.Connection, issuer_metadata: dict[str,d
                 reference_date=latest_itr["date_ref"]
                 origin=f"CVM ITR {current_year} + DFP {annual_end} − ITR comparável {annual_end}"
         balance=latest(current_itr) or annual_latest
-        financial=bool(FINANCIAL_RE.search(f"{meta.get('segment','')} {meta.get('company','')}"))
+        financial=is_financial_company(meta)
         if not annual_latest:
             result={
                 "reference_date":reference_date,"origin":origin,"revenue_ltm":revenue,

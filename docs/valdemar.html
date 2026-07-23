@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Ferramentas Valdemar — Analisador B3</title>
-  <link rel="stylesheet" href="styles.css?v=20260720-2">
-  <link rel="stylesheet" href="valdemar.css?v=20260720-2">
+  <link rel="stylesheet" href="styles.css?v=20260722-1">
+  <link rel="stylesheet" href="valdemar.css?v=20260722-1">
 </head>
 <body>
   <main class="wrap">
     <header class="hero"><div><span class="eyebrow">Qualidade • Crescimento • Valuation</span><h1>Ferramentas Valdemar</h1><p>Comparação, carteira, watchlist e projeções educacionais usando o mesmo banco auditável do radar.</p></div><a class="nav-button" href="index.html">← Voltar ao radar</a></header>
-    <section class="notice"><strong>Aviso:</strong><span>Resultados mecânicos e educacionais. Não constituem recomendação de compra ou venda.</span><span id="dataStatus">Carregando dados...</span></section>
+    <section class="notice"><strong>Aviso:</strong><span>Somente empresas integralmente aprovadas liberam valuation e projeções. Nenhum resultado constitui recomendação.</span><span id="dataStatus">Carregando dados...</span></section>
     <nav class="mode-tabs" aria-label="Modos Valdemar"><button class="active" data-mode="comparison">Comparação</button><button data-mode="portfolio">Carteira</button><button data-mode="watchlist">Watchlist</button><button data-mode="projection">Projeção</button></nav>
     <section id="comparison" class="mode-panel active"><h2>Comparação lado a lado</h2><div class="form-grid three"><select id="compare1"></select><select id="compare2"></select><select id="compare3"></select></div><button id="compareButton" class="primary-button">Comparar</button><div id="comparisonResult" class="result-panel"></div></section>
     <section id="portfolio" class="mode-panel"><h2>Raio-X da carteira</h2><p class="muted-text">Uma linha por posição no formato <code>TICKER, valor investido</code>.</p><textarea id="portfolioInput" rows="8" placeholder="PETR4, 5000&#10;ITSA4, 3000&#10;WEGE3, 2000"></textarea><button id="portfolioButton" class="primary-button">Analisar carteira</button><div id="portfolioResult" class="result-panel"></div></section>
@@ -19,7 +19,6 @@
     <section id="projection" class="mode-panel"><h2>Projeções ilustrativas</h2><div class="projection-block"><h3>Renda por dividendos</h3><div class="form-grid three"><select id="projectionTicker"></select><input id="projectionShares" type="number" min="0" step="1" placeholder="Quantidade de ações"><button id="dividendProjectionButton" class="primary-button">Projetar dividendos</button></div><div id="dividendProjectionResult" class="result-panel"></div></div><div class="projection-block"><h3>Patrimônio com aportes</h3><div class="form-grid four"><input id="initialAmount" type="number" min="0" step="100" placeholder="Valor inicial"><input id="monthlyContribution" type="number" min="0" step="50" placeholder="Aporte mensal"><input id="projectionYears" type="number" min="1" max="40" value="10" placeholder="Anos"><button id="wealthProjectionButton" class="primary-button">Simular patrimônio</button></div><div id="wealthProjectionResult" class="result-panel"></div></div></section>
     <footer>Projeções meramente ilustrativas, baseadas em premissas históricas que podem não se repetir. Não constituem garantia de retorno.</footer>
   </main>
-  <script src="valdemar.js?v=20260720-2"></script>
-  <script src="valdemar_patch.js?v=20260720-2"></script>
+  <script src="valdemar.js?v=20260722-1"></script>
 </body>
 </html>
