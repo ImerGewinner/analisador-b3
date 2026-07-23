@@ -1,28 +1,36 @@
 {
-  "generatedAt": "2026-07-22T04:59:37.962298+00:00",
+  "generatedAt": "2026-07-23T03:02:54.299353+00:00",
   "summary": {
     "imports": 298,
-    "ok": 298,
+    "ok": 297,
     "pending": 0,
-    "errors": 0,
-    "events": 4399,
-    "eligible_events": 4306
+    "errors": 1,
+    "events": 5267,
+    "eligible_events": 5153
   },
-  "failures": [],
+  "failures": [
+    {
+      "root": "MDNE",
+      "status": "ERRO",
+      "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
+      "imported_at": "2026-07-23T03:00:32.816333+00:00",
+      "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+    }
+  ],
   "roots": {
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-07-22T04:52:42.977999+00:00",
+        "imported_at": "2026-07-23T02:57:46.920115+00:00",
         "status": "OK",
-        "message": "14 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 14,
-      "eligibleEventCount": 14,
+      "eventCount": 18,
+      "eligibleEventCount": 18,
       "events": [
         {
           "root": "ABEV",
@@ -38,6 +46,17 @@
         {
           "root": "ABEV",
           "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-04",
+          "last_date_prior": "2026-06-22",
+          "payment_date": "2026-12-31",
+          "rate": 0.0449,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
           "label": "DIVIDENDO",
           "approved_on": "2025-12-09",
           "last_date_prior": "2025-12-18",
@@ -45,6 +64,17 @@
           "rate": 0.4612,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "2025-12-30",
+          "rate": 0.4612,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ABEV",
@@ -60,6 +90,17 @@
         {
           "root": "ABEV",
           "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-09",
+          "last_date_prior": "2025-12-18",
+          "payment_date": "2026-12-31",
+          "rate": 0.269,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
           "label": "DIVIDENDO",
           "approved_on": "2025-07-30",
           "last_date_prior": "2025-08-07",
@@ -67,6 +108,17 @@
           "rate": 0.1283,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-07-30",
+          "last_date_prior": "2025-08-07",
+          "payment_date": "2025-10-06",
+          "rate": 0.1283,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ABEV",
@@ -183,16 +235,16 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-07-22T04:53:11.311443+00:00",
+        "imported_at": "2026-07-23T02:58:15.442726+00:00",
         "status": "OK",
-        "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "21 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 18,
-      "eligibleEventCount": 12,
+      "eventCount": 21,
+      "eligibleEventCount": 14,
       "events": [
         {
           "root": "BBSE",
@@ -208,6 +260,17 @@
         {
           "root": "BBSE",
           "ticker": "BBSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-17",
+          "last_date_prior": "2026-02-12",
+          "payment_date": "2026-03-02",
+          "rate": 2.54996501627,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "BBSE",
+          "ticker": "BBSE3",
           "label": "RENDIMENTO",
           "approved_on": "2025-12-17",
           "last_date_prior": "2026-02-12",
@@ -219,6 +282,17 @@
         {
           "root": "BBSE",
           "ticker": "BBSE3",
+          "label": "RENDIMENTO",
+          "approved_on": "2025-12-17",
+          "last_date_prior": "2026-02-12",
+          "payment_date": "2026-03-02",
+          "rate": 0.05684162552,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "BBSE",
+          "ticker": "BBSE3",
           "label": "DIVIDENDO",
           "approved_on": "2025-06-27",
           "last_date_prior": "2025-08-14",
@@ -226,6 +300,17 @@
           "rate": 1.9420951555,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "BBSE",
+          "ticker": "BBSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-06-27",
+          "last_date_prior": "2025-08-14",
+          "payment_date": "2025-08-26",
+          "rate": 1.9420951555,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "BBSE",
@@ -397,16 +482,16 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-07-22T04:53:49.303895+00:00",
+        "imported_at": "2026-07-23T02:58:55.921117+00:00",
         "status": "OK",
-        "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "24 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 19,
-      "eligibleEventCount": 14,
+      "eventCount": 24,
+      "eligibleEventCount": 18,
       "events": [
         {
           "root": "CXSE",
@@ -423,12 +508,34 @@
           "root": "CXSE",
           "ticker": "CXSE3",
           "label": "DIVIDENDO",
+          "approved_on": "2026-01-30",
+          "last_date_prior": "2026-04-30",
+          "payment_date": "2026-05-15",
+          "rate": 0.33,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
           "approved_on": "2025-11-06",
           "last_date_prior": "2026-01-02",
           "payment_date": "",
           "rate": 0.35,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-06",
+          "last_date_prior": "2026-01-02",
+          "payment_date": "2026-01-16",
+          "rate": 0.35,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "CXSE",
@@ -440,6 +547,17 @@
           "rate": 0.002128404,
           "eligible_dpa": 0,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "RENDIMENTO",
+          "approved_on": "2025-11-06",
+          "last_date_prior": "2026-01-02",
+          "payment_date": "2026-01-16",
+          "rate": 0.002128404,
+          "eligible_dpa": 0,
+          "remarks": ""
         },
         {
           "root": "CXSE",
@@ -456,12 +574,34 @@
           "root": "CXSE",
           "ticker": "CXSE3",
           "label": "DIVIDENDO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-11-03",
+          "payment_date": "2025-11-17",
+          "rate": 0.32,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
           "approved_on": "2025-05-05",
           "last_date_prior": "2025-08-01",
           "payment_date": "",
           "rate": 0.31,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-05-05",
+          "last_date_prior": "2025-08-01",
+          "payment_date": "2025-08-15",
+          "rate": 0.31,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "CXSE",
@@ -622,16 +762,16 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-07-22T04:54:35.702444+00:00",
+        "imported_at": "2026-07-23T02:59:43.798933+00:00",
         "status": "OK",
-        "message": "62 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "80 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 62,
-      "eligibleEventCount": 62,
+      "eventCount": 80,
+      "eligibleEventCount": 80,
       "events": [
         {
           "root": "ITSA",
@@ -648,12 +788,56 @@
           "root": "ITSA",
           "ticker": "ITSA3",
           "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-15",
+          "last_date_prior": "2026-06-18",
+          "payment_date": "2026-08-31",
+          "rate": 0.138,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-15",
+          "last_date_prior": "2026-06-18",
+          "payment_date": "2026-08-31",
+          "rate": 0.138,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
           "approved_on": "2026-02-09",
           "last_date_prior": "2026-05-29",
           "payment_date": "",
           "rate": 0.0242425,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-05-29",
+          "payment_date": "2026-07-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-05-29",
+          "payment_date": "2026-07-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ITSA",
@@ -670,12 +854,56 @@
           "root": "ITSA",
           "ticker": "ITSA3",
           "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-03-16",
+          "last_date_prior": "2026-03-19",
+          "payment_date": "2026-08-31",
+          "rate": 0.116,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-03-16",
+          "last_date_prior": "2026-03-19",
+          "payment_date": "2026-08-31",
+          "rate": 0.116,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
           "approved_on": "2026-02-09",
           "last_date_prior": "2026-02-27",
           "payment_date": "",
           "rate": 0.0242425,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-02-27",
+          "payment_date": "2026-04-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-02-27",
+          "payment_date": "2026-04-01",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ITSA",
@@ -691,6 +919,17 @@
         {
           "root": "ITSA",
           "ticker": "ITSA3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2025-12-19",
+          "rate": 0.775364,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
           "label": "JRS CAP PROPRIO",
           "approved_on": "2025-12-01",
           "last_date_prior": "2025-12-09",
@@ -698,6 +937,39 @@
           "rate": 0.0182,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2026-03-06",
+          "rate": 0.0182,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2025-12-19",
+          "rate": 0.775364,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-01",
+          "last_date_prior": "2025-12-09",
+          "payment_date": "2026-03-06",
+          "rate": 0.0182,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ITSA",
@@ -715,11 +987,55 @@
           "ticker": "ITSA3",
           "label": "JRS CAP PROPRIO",
           "approved_on": "2025-02-10",
+          "last_date_prior": "2025-11-28",
+          "payment_date": "2026-01-02",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-11-28",
+          "payment_date": "2026-01-02",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
           "last_date_prior": "2025-08-29",
           "payment_date": "",
           "rate": 0.0235295,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-08-29",
+          "payment_date": "2025-10-01",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-02-10",
+          "last_date_prior": "2025-08-29",
+          "payment_date": "2025-10-01",
+          "rate": 0.0235295,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ITSA",
@@ -731,6 +1047,28 @@
           "rate": 0.1859,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-08-18",
+          "payment_date": "2025-08-29",
+          "rate": 0.1859,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "ITSA",
+          "ticker": "ITSA4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-11",
+          "last_date_prior": "2025-08-18",
+          "payment_date": "2025-08-29",
+          "rate": 0.1859,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "ITSA",
@@ -1317,19 +1655,101 @@
         }
       ]
     },
+    "MDNE": {
+      "import": {
+        "root": "MDNE",
+        "imported_at": "2026-07-23T03:00:32.816333+00:00",
+        "status": "ERRO",
+        "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
+        "total_shares": 681814870,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 6,
+      "eligibleEventCount": 6,
+      "events": [
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-29",
+          "last_date_prior": "2025-12-30",
+          "payment_date": "",
+          "rate": 0.59183509277,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-29",
+          "last_date_prior": "2025-12-30",
+          "payment_date": "",
+          "rate": 0.61160445017,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-29",
+          "last_date_prior": "2025-12-30",
+          "payment_date": "2026-03-13",
+          "rate": 0.59183509277,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-12",
+          "last_date_prior": "2025-11-14",
+          "payment_date": "",
+          "rate": 0.6,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-04-24",
+          "last_date_prior": "2025-05-21",
+          "payment_date": "",
+          "rate": 0.59089087589,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "MDNE",
+          "ticker": "MDNE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2024-11-07",
+          "last_date_prior": "2024-11-12",
+          "payment_date": "",
+          "rate": 0.65,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        }
+      ]
+    },
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-07-22T04:55:21.634549+00:00",
+        "imported_at": "2026-07-23T03:01:02.708780+00:00",
         "status": "OK",
-        "message": "66 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "90 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 66,
-      "eligibleEventCount": 52,
+      "eventCount": 90,
+      "eligibleEventCount": 72,
       "events": [
         {
           "root": "PETR",
@@ -1346,12 +1766,78 @@
           "root": "PETR",
           "ticker": "PETR3",
           "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-08-20",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-09-21",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-08-20",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-05-11",
+          "last_date_prior": "2026-06-01",
+          "payment_date": "2026-09-21",
+          "rate": 0.35048636,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
           "approved_on": "2026-04-16",
           "last_date_prior": "2026-04-22",
           "payment_date": "",
           "rate": 0.31311454,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "PETR",
@@ -1378,6 +1864,72 @@
         {
           "root": "PETR",
           "ticker": "PETR3",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.01649003,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.02038398,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.31311454,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-05-20",
+          "rate": 0.01649003,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "RENDIMENTO",
+          "approved_on": "2026-04-16",
+          "last_date_prior": "2026-04-22",
+          "payment_date": "2026-06-22",
+          "rate": 0.02038398,
+          "eligible_dpa": 0,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
           "label": "DIVIDENDO",
           "approved_on": "2025-12-11",
           "last_date_prior": "2025-12-22",
@@ -1385,6 +1937,17 @@
           "rate": 0.29642144,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.29642144,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "PETR",
@@ -1411,6 +1974,61 @@
         {
           "root": "PETR",
           "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.17518233,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-02-20",
+          "rate": 0.47160378,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.29642144,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-03-20",
+          "rate": 0.17518233,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-22",
+          "payment_date": "2026-02-20",
+          "rate": 0.47160378,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
           "label": "DIVIDENDO",
           "approved_on": "2025-08-07",
           "last_date_prior": "2025-08-21",
@@ -1418,6 +2036,17 @@
           "rate": 0.20092175,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.20092175,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "PETR",
@@ -1440,6 +2069,61 @@
           "rate": 0.13504029,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-11-21",
+          "rate": 0.33596205,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.13504029,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.20092175,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-11-21",
+          "rate": 0.33596205,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-08-07",
+          "last_date_prior": "2025-08-21",
+          "payment_date": "2025-12-22",
+          "rate": 0.13504029,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "PETR",
@@ -1946,132 +2630,22 @@
           "rate": 1.857745,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "JRS CAP PROPRIO",
-          "approved_on": "2022-05-05",
-          "last_date_prior": "2022-05-23",
-          "payment_date": "",
-          "rate": 0.430177,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2022-04-13",
-          "last_date_prior": "2022-04-13",
-          "payment_date": "",
-          "rate": 2.8610762,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "RENDIMENTO",
-          "approved_on": "2022-04-13",
-          "last_date_prior": "2022-04-13",
-          "payment_date": "",
-          "rate": 0.1091725,
-          "eligible_dpa": 0,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2021-10-28",
-          "last_date_prior": "2021-12-01",
-          "payment_date": "",
-          "rate": 2.195126,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "JRS CAP PROPRIO",
-          "approved_on": "2021-10-28",
-          "last_date_prior": "2021-12-01",
-          "payment_date": "",
-          "rate": 1.055361,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2021-08-04",
-          "last_date_prior": "2021-08-16",
-          "payment_date": "",
-          "rate": 1.609911,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2021-04-14",
-          "last_date_prior": "2021-04-14",
-          "payment_date": "",
-          "rate": 0.787446,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "RENDIMENTO",
-          "approved_on": "2021-04-14",
-          "last_date_prior": "2021-04-14",
-          "payment_date": "",
-          "rate": 0.005388,
-          "eligible_dpa": 0,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2020-07-22",
-          "last_date_prior": "2020-07-22",
-          "payment_date": "",
-          "rate": 0.233649,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "RENDIMENTO",
-          "approved_on": "2020-07-22",
-          "last_date_prior": "2020-07-22",
-          "payment_date": "",
-          "rate": 0.006246,
-          "eligible_dpa": 0,
-          "remarks": "Fonte B3 GetListedCashDividends"
         }
       ]
     },
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-07-22T04:56:13.225872+00:00",
+        "imported_at": "2026-07-23T03:01:56.472966+00:00",
         "status": "OK",
-        "message": "23 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y",
+        "message": "27 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 23,
-      "eligibleEventCount": 23,
+      "eventCount": 27,
+      "eligibleEventCount": 27,
       "events": [
         {
           "root": "VALE",
@@ -2098,6 +2672,28 @@
         {
           "root": "VALE",
           "ticker": "VALE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-01-07",
+          "rate": 1.244102486,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-03-04",
+          "rate": 0.768133538,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
           "label": "JRS CAP PROPRIO",
           "approved_on": "2025-11-27",
           "last_date_prior": "2025-12-11",
@@ -2110,12 +2706,34 @@
           "root": "VALE",
           "ticker": "VALE3",
           "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-11-27",
+          "last_date_prior": "2025-12-11",
+          "payment_date": "2026-03-04",
+          "rate": 1.569535033,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "JRS CAP PROPRIO",
           "approved_on": "2025-07-31",
           "last_date_prior": "2025-08-12",
           "payment_date": "",
           "rate": 1.895387417,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-07-31",
+          "last_date_prior": "2025-08-12",
+          "payment_date": "2025-09-03",
+          "rate": 1.895387417,
+          "eligible_dpa": 1,
+          "remarks": ""
         },
         {
           "root": "VALE",
