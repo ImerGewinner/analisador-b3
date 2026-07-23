@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import advanced_analysis as advanced
+import dividends
 
 
 _original_compute = advanced.compute_metrics
@@ -92,9 +93,10 @@ def parse_fcf_leaf_accounts(content: bytes, year: int, active: set[str]) -> list
 def governed_dividend_history(conn, ticker: str, quote_date: str):
     row = conn.execute(
         """
-        SELECT di.status,di.message
+        SELECT di.status,di.message,dm.dividend_integrity_status
           FROM universe u
           LEFT JOIN dividend_imports di ON di.root=u.root
+          LEFT JOIN dividend_metrics dm ON dm.ticker=u.ticker
          WHERE u.ticker=?
         """,
         (ticker,),
@@ -103,6 +105,7 @@ def governed_dividend_history(conn, ticker: str, quote_date: str):
         row
         and row["status"] == "OK"
         and "GETLISTEDCASHDIVIDENDS-5Y" in advanced.norm_text(row["message"])
+        and row["dividend_integrity_status"] != dividends.CLASS_MISMATCH_STATUS
     )
     if not complete:
         _incomplete_dividend_history.add(ticker)

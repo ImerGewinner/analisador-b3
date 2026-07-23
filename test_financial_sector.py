@@ -1,6 +1,8 @@
 import unittest
 
 import financial_sector as sector
+import financial_sector_v2 as sector_v2
+import fundamentals
 
 
 class FinancialSectorTests(unittest.TestCase):
@@ -22,6 +24,24 @@ class FinancialSectorTests(unittest.TestCase):
         self.assertIn("DO", normalized)
         self.assertNotIn("BANCO", normalized)
         self.assertIn("ITAU", sector.norm("Itaú Unibanco Holding S.A."))
+
+    def test_legal_name_does_not_override_health_segment(self):
+        metadata = {
+            "segment": "Serv.Méd.Hospit..Análises e Diagnósticos",
+            "company": "QUALICORP CONSULTORIA E CORRETORA DE SEGUROS S.A.",
+        }
+        self.assertFalse(fundamentals.is_financial_company(metadata))
+
+    def test_insurance_broker_is_not_prudential_insurer(self):
+        company = {
+            "ticker": "WIZC3",
+            "segment": "Corretoras de Seguros e Resseguros",
+        }
+        self.assertFalse(sector_v2.is_insurer(company))
+
+    def test_impossible_ifdata_ratio_is_pending(self):
+        self.assertIsNone(sector_v2.plausible_ratio("npl", 329_260_614.0))
+        self.assertAlmostEqual(sector_v2.plausible_ratio("basel", 0.149), 0.149)
 
 
 if __name__ == "__main__":

@@ -335,7 +335,12 @@ def build_site(conn: sqlite3.Connection) -> dict:
         FROM universe u LEFT JOIN fundamentals f ON f.cnpj=u.cnpj
         WHERE u.principal='SIM'
         ORDER BY CASE WHEN u.eligible='SIM' THEN 0 ELSE 1 END,
-        CASE WHEN f.quality_status LIKE 'APROVADA%' THEN 0 WHEN f.quality_status='ALERTA VERMELHO' THEN 1 ELSE 2 END,
+        CASE
+          WHEN f.quality_status='APROVADA NO FILTRO' THEN 0
+          WHEN f.quality_status='REPROVADA NO FILTRO' THEN 1
+          WHEN f.quality_status='ALERTA VERMELHO' THEN 2
+          ELSE 3
+        END,
         u.avg20 DESC,u.ticker"""
     ))
     items=[]
@@ -364,18 +369,20 @@ def build_site(conn: sqlite3.Connection) -> dict:
             "lucroLtm":fmt_money(row["profit_ltm"]),"ebitdaLtm":fmt_money(row["ebitda_ltm"]),
             "patrimonio":fmt_money(row["equity"]),"caixa":fmt_money(row["cash"]),
             "dividaBruta":fmt_money(row["debt"]),"dividaLiquida":fmt_money(row["net_debt"]),
+            "dividaLiquidaRaw":row["net_debt"],
             "payout":"Pendente","referenciaFundamentos":row["fundamentals_ref"] or "",
             "origemFundamentos":row["fundamentals_origin"] or "","criterios":criteria,
             "dataCotacao":row["quote_date"],"fonteCotacao":row["source"],
             "fonteFundamentos":row["fundamentals_source"] or FUNDAMENTALS_SOURCE,
-            "valuationStatus":"BLOQUEADO — aguardando payout/proventos e aprovação no filtro",
+            "valuationStatus":"Valuation bloqueado — aguardando payout e decisão integral do filtro.",
         })
     latest_run=conn.execute("SELECT run_at,status,message FROM runs ORDER BY id DESC LIMIT 1").fetchone()
     payload={
         "generatedAt":datetime.now(timezone.utc).isoformat(),"timezone":TIMEZONE_LABEL,
         "count":len(items),"initialEligible":sum(i["elegivelInicial"]=="SIM" for i in items),
-        "qualityApproved":sum(i["filtroQualidadeOriginal"]=="APROVADA NO FILTRO" for i in items),
-        "qualityPartialApproved":sum(i["filtroQualidadeOriginal"].startswith("APROVADA PARCIAL") and i["elegivelInicial"]=="SIM" for i in items),
+        "qualityApproved":sum(i["filtroQualidadeOriginal"]=="APROVADA NO FILTRO" and i["elegivelInicial"]=="SIM" for i in items),
+        "qualityRejected":sum(i["filtroQualidadeOriginal"]=="REPROVADA NO FILTRO" and i["elegivelInicial"]=="SIM" for i in items),
+        "qualityPartialApproved":0,
         "redAlerts":sum(i["filtroQualidadeOriginal"]=="ALERTA VERMELHO" and i["elegivelInicial"]=="SIM" for i in items),
         "pendingFundamentals":sum(i["filtroQualidadeOriginal"].startswith("PENDENTE") and i["elegivelInicial"]=="SIM" for i in items),
         "latestQuoteDate":max((i["dataCotacao"] for i in items),default=""),
@@ -383,11 +390,11 @@ def build_site(conn: sqlite3.Connection) -> dict:
         "lastRun":dict(latest_run) if latest_run else None,"items":items,
         "methodology":{
             "initial":"Volume médio 20d ≥ R$ 1 milhão; ao menos 15 dos últimos 20 pregões; máximo de 5 sessões sem negócio.",
-            "quality":"ROE médio 5A > 12%; CAGR do lucro > 0%; DL/EBITDA < 3x; margem estável/crescente; lucro positivo em ao menos 4 de 5 anos.",
-            "financial":"Critérios ajustados: DL/EBITDA não é aplicado. Basileia, inadimplência, cobertura, provisões e eficiência ainda estão pendentes.",
+            "quality":"ROE médio 5A > 12%; CAGR do lucro > 0%; DL/EBITDA < 3x; margem estável/crescente; lucro positivo em ao menos 4 de 5 anos; payout < 90%. Uma reprovação já bloqueia valuation.",
+            "financial":"DL/EBITDA e DCF industrial não são aplicados. Bancos exigem dados IFData; seguradoras permanecem pendentes sem dados SUSEP conciliados.",
             "valuation":"Bloqueado até conciliar payout e proventos. Nenhum preço-teto ou DCF é calculado nesta etapa.",
         },
-        "disclaimer":"Análise educacional baseada em dados públicos B3/CVM. Não constitui recomendação de compra ou venda. Valuation permanece bloqueado.",
+        "disclaimer":"Esta é uma análise educacional. Dados de mercado podem ter atraso. Nenhum conteúdo constitui recomendação de compra ou venda.",
     }
     (DOCS_DIR/"data.json").write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
     return payload
@@ -409,7 +416,8 @@ def run() -> int:
         (DOCS_DIR/"status.json").write_text(json.dumps({
             "status":"OK","updatedAt":payload["generatedAt"],"quoteDate":payload["latestQuoteDate"],
             "fundamentalsDate":payload["latestFundamentalsDate"],"companies":payload["count"],
-            "initialEligible":payload["initialEligible"],"qualityPartialApproved":payload["qualityPartialApproved"],
+            "initialEligible":payload["initialEligible"],"qualityApproved":payload["qualityApproved"],
+            "qualityRejected":payload["qualityRejected"],"qualityPartialApproved":0,
             "redAlerts":payload["redAlerts"]},ensure_ascii=False,indent=2),encoding="utf-8")
         print(json.dumps({"status":"OK","ativos":changed,**summary},ensure_ascii=False))
         return 0

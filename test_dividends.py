@@ -1,3 +1,4 @@
+import sqlite3
 import unittest
 
 import dividends
@@ -36,6 +37,51 @@ class DividendsTests(unittest.TestCase):
     def test_payout_threshold_is_strict(self):
         self.assertTrue(0.8999 < dividends.PAYOUT_MAX)
         self.assertFalse(0.90 < dividends.PAYOUT_MAX)
+
+    def test_near_identical_b3_events_are_deduplicated(self):
+        base = {
+            "label": "DIVIDENDO",
+            "approved_on": "2025-12-19",
+            "last_date_prior": "2025-12-26",
+            "payment_date": "",
+            "related_to": "",
+            "remarks": "Fonte B3",
+        }
+        events = [
+            {**base, "rate": 0.1427447908},
+            {**base, "rate": 0.1427447909},
+        ]
+        self.assertEqual(len(dividends.deduplicate_events(events)), 1)
+
+    def test_unexplained_dividend_outlier_blocks_integrity(self):
+        status, valid = dividends.dividend_integrity(0.70, 0.0, 0.10)
+        self.assertFalse(valid)
+        self.assertTrue(status.startswith("PENDENTE"))
+
+    def test_bazin_labels_are_neutral(self):
+        self.assertEqual(dividends.quality_rules.bazin_band(0.15), "MARGEM ≥ +10%")
+        self.assertEqual(dividends.quality_rules.bazin_band(-0.01), "MARGEM NEGATIVA")
+
+    def test_impossible_regulatory_ratio_is_not_exposed(self):
+        self.assertIsNone(dividends.financial_ratio(32_926_061_427.54, 1.0))
+        self.assertAlmostEqual(dividends.financial_ratio(0.149, 1.0), 0.149)
+
+    def test_sibling_class_event_does_not_become_zero_dpa(self):
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.execute(
+            """CREATE TABLE cash_dividends(
+            root TEXT,ticker TEXT,eligible_dpa INTEGER,last_date_prior TEXT
+            )"""
+        )
+        conn.execute(
+            "INSERT INTO cash_dividends VALUES('PETR','PETR3',1,'2026-05-01')"
+        )
+        self.assertTrue(
+            dividends.has_sibling_class_events(
+                conn, "PETR", "PETR4", "2025-07-21", "2026-07-21"
+            )
+        )
 
 
 if __name__ == "__main__":

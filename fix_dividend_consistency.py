@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 import advanced_analysis as advanced
 import app
+import dividends
 
 
 def complete_history(message: object, status: object) -> bool:
@@ -23,11 +24,11 @@ def run() -> int:
     try:
         rows = conn.execute(
             """
-            SELECT u.ticker,u.cnpj,u.quote_date,di.status AS import_status,
+            SELECT u.ticker,u.cnpj,u.quote_date,u.eligible,di.status AS import_status,
                    di.message AS import_message,
                    f.quality_status,f.roe_avg_5y,f.profit_cagr_5y,
                    f.margin_trend,f.payout,
-                   dm.bazin_margin,
+                   dm.bazin_margin,dm.dividend_integrity_status,
                    am.dcf_margin
               FROM universe u
               LEFT JOIN dividend_imports di ON di.root=u.root
@@ -45,7 +46,10 @@ def run() -> int:
 
         for row in rows:
             ticker = str(row["ticker"])
-            if complete_history(row["import_message"], row["import_status"]):
+            if (
+                complete_history(row["import_message"], row["import_status"])
+                and row["dividend_integrity_status"] != dividends.CLASS_MISMATCH_STATUS
+            ):
                 years, streak, cagr = advanced.dividend_history(
                     conn, ticker, str(row["quote_date"] or "")
                 )

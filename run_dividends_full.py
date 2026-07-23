@@ -64,7 +64,7 @@ def fetch_historical_5y(root: str) -> dict:
                             continue
                     except ValueError:
                         pass
-                key = (event["assetIssued"], event["label"], event["approvedOn"], event["lastDatePrior"], round(float(event["rate"]), 12))
+                key = (event["assetIssued"], event["label"], event["approvedOn"], event["lastDatePrior"], round(float(event["rate"]), 8))
                 if key in seen:
                     continue
                 seen.add(key)
@@ -95,6 +95,19 @@ def fetch_dividends_governed(root: str) -> dict:
             info = supplement.get("info") or supplement.get("Info") or {}
             if isinstance(info, dict) and info:
                 historical["info"] = info
+            supplement_events = (
+                supplement.get("cashDividends")
+                or supplement.get("CashDividends")
+                or []
+            )
+            if supplement_events:
+                historical["cashDividends"] = (
+                    list(historical.get("cashDividends") or [])
+                    + list(supplement_events)
+                )
+                historical["sourceMode"] = (
+                    "GetListedCashDividends-5Y+GetListedSupplementCompany-12M"
+                )
         return historical
     except Exception as historical_error:
         if supplement and (supplement.get("cashDividends") or supplement.get("CashDividends")):
