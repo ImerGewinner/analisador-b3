@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-07-29T04:59:03.097591+00:00",
+  "generatedAt": "2026-07-30T04:46:54.570919+00:00",
   "summary": {
-    "imports": 301,
-    "ok": 300,
+    "imports": 302,
+    "ok": 301,
     "pending": 0,
     "errors": 1,
-    "events": 5436,
-    "eligible_events": 5322
+    "events": 5448,
+    "eligible_events": 5333
   },
   "failures": [
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-07-29T04:57:20.766445+00:00",
+      "imported_at": "2026-07-30T04:44:55.788819+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,7 +21,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-07-29T04:55:40.157751+00:00",
+        "imported_at": "2026-07-30T04:43:05.382693+00:00",
         "status": "OK",
         "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
@@ -235,7 +235,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-07-29T04:56:00.081360+00:00",
+        "imported_at": "2026-07-30T04:43:27.973864+00:00",
         "status": "OK",
         "message": "21 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
@@ -482,7 +482,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-07-29T04:56:30.895179+00:00",
+        "imported_at": "2026-07-30T04:44:01.085871+00:00",
         "status": "OK",
         "message": "24 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
@@ -762,7 +762,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-07-29T04:57:06.774888+00:00",
+        "imported_at": "2026-07-30T04:44:40.563145+00:00",
         "status": "OK",
         "message": "79 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
@@ -1647,7 +1647,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-07-29T04:57:20.766445+00:00",
+        "imported_at": "2026-07-30T04:44:55.788819+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1729,7 +1729,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-07-29T04:57:43.448516+00:00",
+        "imported_at": "2026-07-30T04:45:20.492288+00:00",
         "status": "OK",
         "message": "90 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
@@ -2625,7 +2625,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-07-29T04:58:25.212360+00:00",
+        "imported_at": "2026-07-30T04:46:04.501719+00:00",
         "status": "OK",
         "message": "27 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
