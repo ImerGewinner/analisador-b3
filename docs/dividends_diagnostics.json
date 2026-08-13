@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-12T03:48:41.999398+00:00",
+  "generatedAt": "2026-08-13T04:01:58.294220+00:00",
   "summary": {
-    "imports": 304,
-    "ok": 303,
+    "imports": 305,
+    "ok": 304,
     "pending": 0,
     "errors": 1,
     "events": 5511,
@@ -13,7 +13,7 @@
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-08-12T03:47:02.548040+00:00",
+      "imported_at": "2026-08-13T03:59:35.716705+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,7 +21,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-08-12T03:45:23.662628+00:00",
+        "imported_at": "2026-08-13T03:56:58.990929+00:00",
         "status": "OK",
         "message": "17 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
@@ -224,7 +224,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-08-12T03:45:43.354837+00:00",
+        "imported_at": "2026-08-13T03:57:24.152327+00:00",
         "status": "OK",
         "message": "22 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
@@ -482,7 +482,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-08-12T03:46:13.214996+00:00",
+        "imported_at": "2026-08-13T03:58:30.266659+00:00",
         "status": "OK",
         "message": "24 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
@@ -762,7 +762,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-08-12T03:46:49.374752+00:00",
+        "imported_at": "2026-08-13T03:59:18.463446+00:00",
         "status": "OK",
         "message": "79 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
@@ -1647,7 +1647,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-08-12T03:47:02.548040+00:00",
+        "imported_at": "2026-08-13T03:59:35.716705+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1729,7 +1729,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-08-12T03:47:24.391855+00:00",
+        "imported_at": "2026-08-13T04:00:02.630721+00:00",
         "status": "OK",
         "message": "90 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
@@ -2625,17 +2625,39 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-08-12T03:48:03.558708+00:00",
+        "imported_at": "2026-08-13T04:01:14.902490+00:00",
         "status": "OK",
-        "message": "27 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "29 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 27,
-      "eligibleEventCount": 27,
+      "eventCount": 29,
+      "eligibleEventCount": 29,
       "events": [
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-07-30",
+          "last_date_prior": "2026-08-11",
+          "payment_date": "2026-09-02",
+          "rate": 0.462016093,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-07-30",
+          "last_date_prior": "2026-08-11",
+          "payment_date": "2026-09-02",
+          "rate": 1.568705805,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
         {
           "root": "VALE",
           "ticker": "VALE3",
