@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-08-29T08:24:39.306032+00:00",
+  "generatedAt": "2026-09-01T06:51:52.255800+00:00",
   "summary": {
-    "imports": 306,
-    "ok": 305,
+    "imports": 307,
+    "ok": 306,
     "pending": 0,
     "errors": 1,
-    "events": 5494,
-    "eligible_events": 5379
+    "events": 5555,
+    "eligible_events": 5440
   },
   "failures": [
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-08-29T08:22:52.642834+00:00",
+      "imported_at": "2026-09-01T06:50:09.968039+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,7 +21,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-08-29T08:20:59.493500+00:00",
+        "imported_at": "2026-09-01T06:48:27.096994+00:00",
         "status": "OK",
         "message": "17 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
@@ -224,17 +224,28 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-08-29T08:21:22.682287+00:00",
+        "imported_at": "2026-09-01T06:48:47.557732+00:00",
         "status": "OK",
-        "message": "21 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "22 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 21,
-      "eligibleEventCount": 14,
+      "eventCount": 22,
+      "eligibleEventCount": 15,
       "events": [
+        {
+          "root": "BBSE",
+          "ticker": "BBSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-06-24",
+          "last_date_prior": "2026-08-06",
+          "payment_date": "",
+          "rate": 1.98328466981,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "BBSE",
           "ticker": "BBSE3",
@@ -471,17 +482,28 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-08-29T08:21:58.047107+00:00",
+        "imported_at": "2026-09-01T06:49:18.698190+00:00",
         "status": "OK",
-        "message": "24 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "25 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 24,
-      "eligibleEventCount": 18,
+      "eventCount": 25,
+      "eligibleEventCount": 19,
       "events": [
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-05-07",
+          "last_date_prior": "2026-08-03",
+          "payment_date": "",
+          "rate": 0.35,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "CXSE",
           "ticker": "CXSE3",
@@ -751,17 +773,28 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-08-29T08:22:36.985793+00:00",
+        "imported_at": "2026-09-01T06:49:55.473855+00:00",
         "status": "OK",
-        "message": "77 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "78 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 77,
-      "eligibleEventCount": 77,
+      "eventCount": 78,
+      "eligibleEventCount": 78,
       "events": [
+        {
+          "root": "ITSA",
+          "ticker": "ITSA3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-02-09",
+          "last_date_prior": "2026-08-31",
+          "payment_date": "",
+          "rate": 0.0242425,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "ITSA",
           "ticker": "ITSA3",
@@ -1614,7 +1647,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-08-29T08:22:52.642834+00:00",
+        "imported_at": "2026-09-01T06:50:09.968039+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1696,17 +1729,28 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-08-29T08:23:17.513578+00:00",
+        "imported_at": "2026-09-01T06:50:32.379632+00:00",
         "status": "OK",
-        "message": "90 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "93 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 90,
-      "eligibleEventCount": 72,
+      "eventCount": 93,
+      "eligibleEventCount": 75,
       "events": [
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-08-06",
+          "last_date_prior": "2026-08-21",
+          "payment_date": "",
+          "rate": 0.47156696,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "PETR",
           "ticker": "PETR3",
@@ -1717,6 +1761,28 @@
           "rate": 0.47156696,
           "eligible_dpa": 1,
           "remarks": ""
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-08-06",
+          "last_date_prior": "2026-08-21",
+          "payment_date": "",
+          "rate": 0.67407131,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "PETR",
+          "ticker": "PETR3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-08-06",
+          "last_date_prior": "2026-08-21",
+          "payment_date": "",
+          "rate": 0.20250435,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
         },
         {
           "root": "PETR",
@@ -2553,56 +2619,34 @@
           "rate": 3.366001,
           "eligible_dpa": 1,
           "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "JRS CAP PROPRIO",
-          "approved_on": "2022-07-28",
-          "last_date_prior": "2022-08-11",
-          "payment_date": "",
-          "rate": 0.427141,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2022-05-05",
-          "last_date_prior": "2022-05-23",
-          "payment_date": "",
-          "rate": 1.427568,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
-        },
-        {
-          "root": "PETR",
-          "ticker": "PETR3",
-          "label": "DIVIDENDO",
-          "approved_on": "2022-05-05",
-          "last_date_prior": "2022-05-23",
-          "payment_date": "",
-          "rate": 1.857745,
-          "eligible_dpa": 1,
-          "remarks": "Fonte B3 GetListedCashDividends"
         }
       ]
     },
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-08-29T08:23:59.153245+00:00",
+        "imported_at": "2026-09-01T06:51:13.426051+00:00",
         "status": "OK",
-        "message": "28 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "30 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 28,
-      "eligibleEventCount": 28,
+      "eventCount": 30,
+      "eligibleEventCount": 30,
       "events": [
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-07-30",
+          "last_date_prior": "2026-08-11",
+          "payment_date": "",
+          "rate": 0.462016093,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "VALE",
           "ticker": "VALE3",
@@ -2613,6 +2657,17 @@
           "rate": 0.462016093,
           "eligible_dpa": 1,
           "remarks": ""
+        },
+        {
+          "root": "VALE",
+          "ticker": "VALE3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-07-30",
+          "last_date_prior": "2026-08-11",
+          "payment_date": "",
+          "rate": 1.568705805,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
         },
         {
           "root": "VALE",
