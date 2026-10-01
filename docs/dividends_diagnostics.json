@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-09-30T07:26:48.748777+00:00",
+  "generatedAt": "2026-10-01T07:50:41.262854+00:00",
   "summary": {
     "imports": 308,
     "ok": 307,
     "pending": 0,
     "errors": 1,
-    "events": 5528,
-    "eligible_events": 5417
+    "events": 5569,
+    "eligible_events": 5457
   },
   "failures": [
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-09-30T07:25:06.053572+00:00",
+      "imported_at": "2026-10-01T07:49:03.278292+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,17 +21,28 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-09-30T07:23:23.518051+00:00",
+        "imported_at": "2026-10-01T07:47:21.829407+00:00",
         "status": "OK",
-        "message": "18 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 18,
-      "eligibleEventCount": 18,
+      "eventCount": 19,
+      "eligibleEventCount": 19,
       "events": [
+        {
+          "root": "ABEV",
+          "ticker": "ABEV3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-07-29",
+          "last_date_prior": "2026-09-21",
+          "payment_date": "",
+          "rate": 0.0713,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
         {
           "root": "ABEV",
           "ticker": "ABEV3",
@@ -235,7 +246,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-09-30T07:23:43.656004+00:00",
+        "imported_at": "2026-10-01T07:47:43.399164+00:00",
         "status": "OK",
         "message": "22 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
@@ -493,7 +504,7 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-09-30T07:24:15.659964+00:00",
+        "imported_at": "2026-10-01T07:48:14.242871+00:00",
         "status": "OK",
         "message": "25 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
@@ -784,7 +795,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-09-30T07:24:51.916276+00:00",
+        "imported_at": "2026-10-01T07:48:49.460865+00:00",
         "status": "OK",
         "message": "78 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
@@ -1658,7 +1669,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-09-30T07:25:06.053572+00:00",
+        "imported_at": "2026-10-01T07:49:03.278292+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1740,7 +1751,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-09-30T07:25:28.581589+00:00",
+        "imported_at": "2026-10-01T07:49:25.347518+00:00",
         "status": "OK",
         "message": "91 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
@@ -2636,7 +2647,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-09-30T07:26:10.465807+00:00",
+        "imported_at": "2026-10-01T07:50:04.409220+00:00",
         "status": "OK",
         "message": "30 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
