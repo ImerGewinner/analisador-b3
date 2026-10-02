@@ -1,19 +1,26 @@
 {
-  "generatedAt": "2026-10-01T07:50:41.262854+00:00",
+  "generatedAt": "2026-10-02T07:38:08.603068+00:00",
   "summary": {
     "imports": 308,
-    "ok": 307,
+    "ok": 306,
     "pending": 0,
-    "errors": 1,
-    "events": 5569,
-    "eligible_events": 5457
+    "errors": 2,
+    "events": 5550,
+    "eligible_events": 5438
   },
   "failures": [
+    {
+      "root": "CLSC",
+      "status": "ERRO",
+      "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
+      "imported_at": "2026-10-02T07:34:38.824934+00:00",
+      "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+    },
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-10-01T07:49:03.278292+00:00",
+      "imported_at": "2026-10-02T07:36:00.274091+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,7 +28,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-10-01T07:47:21.829407+00:00",
+        "imported_at": "2026-10-02T07:33:41.072658+00:00",
         "status": "OK",
         "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
@@ -246,7 +253,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-10-01T07:47:43.399164+00:00",
+        "imported_at": "2026-10-02T07:34:07.810682+00:00",
         "status": "OK",
         "message": "22 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
@@ -501,10 +508,389 @@
         }
       ]
     },
+    "CLSC": {
+      "import": {
+        "root": "CLSC",
+        "imported_at": "2026-10-02T07:34:38.824934+00:00",
+        "status": "ERRO",
+        "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
+        "total_shares": 37160042,
+        "common_shares": null,
+        "preferred_shares": null,
+        "source_url": "https://sistemaswebb3-listados.b3.com.br/"
+      },
+      "eventCount": 33,
+      "eligibleEventCount": 33,
+      "events": [
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-09-24",
+          "last_date_prior": "2026-09-30",
+          "payment_date": "",
+          "rate": 0.961950819,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-09-24",
+          "last_date_prior": "2026-09-30",
+          "payment_date": "9999-12-31",
+          "rate": 0.961950819,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-09-24",
+          "last_date_prior": "2026-09-30",
+          "payment_date": "",
+          "rate": 1.058145901,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-07-23",
+          "last_date_prior": "2026-07-31",
+          "payment_date": "",
+          "rate": 0.488860252,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-07-23",
+          "last_date_prior": "2026-07-31",
+          "payment_date": "",
+          "rate": 0.5377462775,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-25",
+          "last_date_prior": "2026-06-30",
+          "payment_date": "",
+          "rate": 1.9300288265,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC4",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-06-25",
+          "last_date_prior": "2026-06-30",
+          "payment_date": "",
+          "rate": 2.123031709,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-04-30",
+          "last_date_prior": "2026-04-30",
+          "payment_date": "",
+          "rate": 0.633216774,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC4",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-04-30",
+          "last_date_prior": "2026-04-30",
+          "payment_date": "",
+          "rate": 0.696538451,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2026-03-19",
+          "last_date_prior": "2026-03-25",
+          "payment_date": "",
+          "rate": 0.9494204635,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-12-11",
+          "last_date_prior": "2025-12-17",
+          "payment_date": "",
+          "rate": 1.106455753,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-09-18",
+          "last_date_prior": "2025-09-24",
+          "payment_date": "",
+          "rate": 0.915398283,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-06-18",
+          "last_date_prior": "2025-06-25",
+          "payment_date": "",
+          "rate": 0.717650154,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2025-04-30",
+          "last_date_prior": "2025-04-30",
+          "payment_date": "",
+          "rate": 0.945413409,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2025-03-20",
+          "last_date_prior": "2025-03-26",
+          "payment_date": "",
+          "rate": 0.7354879975,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2024-12-12",
+          "last_date_prior": "2024-12-23",
+          "payment_date": "",
+          "rate": 1.1877640555,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2024-09-19",
+          "last_date_prior": "2024-09-25",
+          "payment_date": "",
+          "rate": 0.583272479,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2024-06-20",
+          "last_date_prior": "2024-06-26",
+          "payment_date": "",
+          "rate": 0.517758451,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2024-04-30",
+          "last_date_prior": "2024-04-30",
+          "payment_date": "",
+          "rate": 0.0153302625,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2024-03-18",
+          "last_date_prior": "2024-03-22",
+          "payment_date": "",
+          "rate": 0.539743877,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2023-12-14",
+          "last_date_prior": "2023-12-22",
+          "payment_date": "",
+          "rate": 1.085481857,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2023-09-21",
+          "last_date_prior": "2023-09-29",
+          "payment_date": "",
+          "rate": 0.596323088,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2023-06-22",
+          "last_date_prior": "2023-06-30",
+          "payment_date": "",
+          "rate": 0.565977322,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2023-04-28",
+          "last_date_prior": "2023-04-28",
+          "payment_date": "",
+          "rate": 0.279791167,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2023-03-16",
+          "last_date_prior": "2023-03-31",
+          "payment_date": "",
+          "rate": 0.561134328,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2022-12-15",
+          "last_date_prior": "2022-12-29",
+          "payment_date": "",
+          "rate": 0.639450517,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2022-09-22",
+          "last_date_prior": "2022-09-30",
+          "payment_date": "",
+          "rate": 0.513814205,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2022-06-15",
+          "last_date_prior": "2022-06-30",
+          "payment_date": "",
+          "rate": 0.51249397361,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2022-04-29",
+          "last_date_prior": "2022-04-29",
+          "payment_date": "",
+          "rate": 0.24555527257,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2022-03-24",
+          "last_date_prior": "2022-03-30",
+          "payment_date": "",
+          "rate": 0.42447040474,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2021-11-30",
+          "last_date_prior": "2021-12-20",
+          "payment_date": "",
+          "rate": 1.51363171308,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "DIVIDENDO",
+          "approved_on": "2021-04-29",
+          "last_date_prior": "2021-04-29",
+          "payment_date": "",
+          "rate": 0.636589005,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        },
+        {
+          "root": "CLSC",
+          "ticker": "CLSC3",
+          "label": "JRS CAP PROPRIO",
+          "approved_on": "2020-12-21",
+          "last_date_prior": "2020-12-30",
+          "payment_date": "",
+          "rate": 0.946978595,
+          "eligible_dpa": 1,
+          "remarks": "Fonte B3 GetListedCashDividends"
+        }
+      ]
+    },
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-10-01T07:48:14.242871+00:00",
+        "imported_at": "2026-10-02T07:34:51.524347+00:00",
         "status": "OK",
         "message": "25 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
@@ -795,7 +1181,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-10-01T07:48:49.460865+00:00",
+        "imported_at": "2026-10-02T07:35:41.419367+00:00",
         "status": "OK",
         "message": "78 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
@@ -1669,7 +2055,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-10-01T07:49:03.278292+00:00",
+        "imported_at": "2026-10-02T07:36:00.274091+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1751,7 +2137,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-10-01T07:49:25.347518+00:00",
+        "imported_at": "2026-10-02T07:36:28.357495+00:00",
         "status": "OK",
         "message": "91 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
@@ -2647,7 +3033,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-10-01T07:50:04.409220+00:00",
+        "imported_at": "2026-10-02T07:37:21.723032+00:00",
         "status": "OK",
         "message": "30 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
