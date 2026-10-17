@@ -1,7 +1,7 @@
 {
   "status": "PARCIAL",
-  "updatedAt": "2026-10-16T06:19:38.656352+00:00",
-  "quoteDate": "2026-10-15",
+  "updatedAt": "2026-10-17T06:06:27.137752+00:00",
+  "quoteDate": "2026-10-16",
   "fundamentalsDate": "2026-06-30",
   "companies": 309,
   "initialEligible": 186,
@@ -9,35 +9,30 @@
   "qualityRejected": 29,
   "qualityPartialApproved": 0,
   "redAlerts": 129,
-  "dividendsUpdatedAt": "2026-10-16T06:26:49.516280+00:00",
-  "dividendsReferenceDate": "2026-10-15",
-  "dividendImportsOk": 307,
-  "dividendImportsError": 2,
+  "dividendsUpdatedAt": "2026-10-17T06:13:29.864113+00:00",
+  "dividendsReferenceDate": "2026-10-16",
+  "dividendImportsOk": 308,
+  "dividendImportsError": 1,
   "bazinEnabled": 6,
   "bazinMarginGe10": 1,
   "dividendImportsPending": 0,
   "failedDividendRoots": [
-    {
-      "root": "CLSC",
-      "status": "ERRO",
-      "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')"
-    },
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')"
     }
   ],
-  "advancedUpdatedAt": "2026-10-16T06:27:01.102031+00:00",
+  "advancedUpdatedAt": "2026-10-17T06:13:39.281847+00:00",
   "selic": 0.1375,
-  "selicReferenceDate": "2026-10-16",
+  "selicReferenceDate": "2026-10-17",
   "dcfEnabled": 1,
   "dcfMarginGe10": 0,
   "dividendConsistent5y": 122,
   "dcfInvalidatedForMissingYears": 0,
-  "dcfGovernanceUpdatedAt": "2026-10-16T06:27:01.289088+00:00",
-  "dividendHistoryComplete": 305,
-  "dividendConsistencyUpdatedAt": "2026-10-16T06:27:01.532527+00:00",
+  "dcfGovernanceUpdatedAt": "2026-10-17T06:13:39.510693+00:00",
+  "dividendHistoryComplete": 306,
+  "dividendConsistencyUpdatedAt": "2026-10-17T06:13:39.717599+00:00",
   "pendingFundamentals": 19,
   "contractVersion": "strict-quality-v1"
 }
