@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-11-03T08:37:58.973301+00:00",
+  "generatedAt": "2026-11-04T08:05:42.723776+00:00",
   "summary": {
     "imports": 310,
     "ok": 309,
     "pending": 0,
     "errors": 1,
-    "events": 5611,
-    "eligible_events": 5503
+    "events": 5613,
+    "eligible_events": 5505
   },
   "failures": [
     {
       "root": "MDNE",
       "status": "ERRO",
       "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
-      "imported_at": "2026-11-03T08:36:25.289553+00:00",
+      "imported_at": "2026-11-04T08:03:54.699824+00:00",
       "source_url": "https://sistemaswebb3-listados.b3.com.br/"
     }
   ],
@@ -21,7 +21,7 @@
     "ABEV": {
       "import": {
         "root": "ABEV",
-        "imported_at": "2026-11-03T08:34:17.543948+00:00",
+        "imported_at": "2026-11-04T08:01:33.789552+00:00",
         "status": "OK",
         "message": "19 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 16097176960,
@@ -246,7 +246,7 @@
     "BBSE": {
       "import": {
         "root": "BBSE",
-        "imported_at": "2026-11-03T08:34:42.829341+00:00",
+        "imported_at": "2026-11-04T08:02:02.661166+00:00",
         "status": "OK",
         "message": "21 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 1939345359,
@@ -493,17 +493,28 @@
     "CXSE": {
       "import": {
         "root": "CXSE",
-        "imported_at": "2026-11-03T08:35:22.869996+00:00",
+        "imported_at": "2026-11-04T08:02:46.438711+00:00",
         "status": "OK",
-        "message": "25 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
+        "message": "26 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 2999992485,
         "common_shares": null,
         "preferred_shares": null,
         "source_url": "https://sistemaswebb3-listados.b3.com.br/"
       },
-      "eventCount": 25,
-      "eligibleEventCount": 19,
+      "eventCount": 26,
+      "eligibleEventCount": 20,
       "events": [
+        {
+          "root": "CXSE",
+          "ticker": "CXSE3",
+          "label": "DIVIDENDO",
+          "approved_on": "2026-08-10",
+          "last_date_prior": "2026-11-03",
+          "payment_date": "2026-11-17",
+          "rate": 0.35,
+          "eligible_dpa": 1,
+          "remarks": ""
+        },
         {
           "root": "CXSE",
           "ticker": "CXSE3",
@@ -784,7 +795,7 @@
     "ITSA": {
       "import": {
         "root": "ITSA",
-        "imported_at": "2026-11-03T08:36:08.561985+00:00",
+        "imported_at": "2026-11-04T08:03:36.276028+00:00",
         "status": "OK",
         "message": "76 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 11299917853,
@@ -1636,7 +1647,7 @@
     "MDNE": {
       "import": {
         "root": "MDNE",
-        "imported_at": "2026-11-03T08:36:25.289553+00:00",
+        "imported_at": "2026-11-04T08:03:54.699824+00:00",
         "status": "ERRO",
         "message": "IntegrityError('UNIQUE constraint failed: cash_dividends.event_id')",
         "total_shares": 681814870,
@@ -1718,7 +1729,7 @@
     "PETR": {
       "import": {
         "root": "PETR",
-        "imported_at": "2026-11-03T08:36:52.554163+00:00",
+        "imported_at": "2026-11-04T08:04:24.687426+00:00",
         "status": "OK",
         "message": "91 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": 12953836930,
@@ -2614,7 +2625,7 @@
     "VALE": {
       "import": {
         "root": "VALE",
-        "imported_at": "2026-11-03T08:37:39.989096+00:00",
+        "imported_at": "2026-11-04T08:05:17.672531+00:00",
         "status": "OK",
         "message": "30 evento(s); status=VALIDADO; fonte=GetListedCashDividends-5Y+GetListedSupplementCompany-12M",
         "total_shares": null,
