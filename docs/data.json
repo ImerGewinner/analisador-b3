@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T09:15:56.421261+00:00",
+  "generatedAt": "2026-11-21T08:51:18.102855+00:00",
   "timezone": "America/Manaus",
   "count": 311,
   "initialEligible": 189,
@@ -11,7 +11,7 @@
   "latestQuoteDate": "2026-11-19",
   "latestFundamentalsDate": "2026-09-30",
   "lastRun": {
-    "run_at": "2026-11-20T09:15:56.409093+00:00",
+    "run_at": "2026-11-21T08:51:18.091269+00:00",
     "status": "PARCIAL",
     "message": "Proventos: 310 OK, 0 pendentes, 1 erros; Bazin 6."
   },
@@ -62278,7 +62278,7 @@
   "bazinMarginGe10": 3,
   "dividendImportsOk": 310,
   "dividendImportsError": 1,
-  "dividendsUpdatedAt": "2026-11-20T09:15:56.452714+00:00",
+  "dividendsUpdatedAt": "2026-11-21T08:51:18.134427+00:00",
   "dividendsReferenceDate": "2026-11-19",
   "dividendImportsPending": 0,
   "failedDividendRoots": [
@@ -62291,15 +62291,15 @@
   "macro": {
     "selic": "13,75%",
     "selicRaw": 0.1375,
-    "referenceDate": "2026-11-20",
+    "referenceDate": "2026-11-21",
     "source": "Banco Central do Brasil — SGS série 432 (Meta Selic)"
   },
   "dcfEnabled": 1,
   "dcfMarginGe10": 1,
   "dividendConsistent5y": 123,
-  "advancedUpdatedAt": "2026-11-20T09:16:04.524825+00:00",
-  "dcfGovernanceUpdatedAt": "2026-11-20T09:16:04.711568+00:00",
+  "advancedUpdatedAt": "2026-11-21T08:51:26.088468+00:00",
+  "dcfGovernanceUpdatedAt": "2026-11-21T08:51:26.267906+00:00",
   "dividendHistoryComplete": 308,
-  "dividendConsistencyUpdatedAt": "2026-11-20T09:16:04.879344+00:00",
+  "dividendConsistencyUpdatedAt": "2026-11-21T08:51:26.444913+00:00",
   "contractVersion": "strict-quality-v1"
 }
